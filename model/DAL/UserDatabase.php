@@ -6,16 +6,18 @@ class UserDatabase {
     private static $tableName = "Users";
     private static $rowUsername = "username";
     private static $rowPassword = "password";
+
+    private static $tableFields = "(username VARCHAR(30) NOT NULL UNIQUE,password VARCHAR(60) NOT NULL)";
+    
     private static $userAlreadyExistsMessage = "User exists, pick another username.";
     private static $wrongNameOrPasswordMessage = "Wrong name or password";
-    private $connection;
+    private $database;
 
-    public function __construct(\mysqli $dbconnection) {
-        $this->connection = $dbconnection; 
+    public function __construct(\Model\DAL\Database $database) {
+        $this->database = $database; 
 
-        $this->createUserTableIfNeeded();
+        $this->database->createTableIfNeeded(self::$tableName, self::$tableFields);
     }
-
 
     public function registerUser(\Model\User $user) { 
         $credentials = $user->getCredentials();
@@ -27,9 +29,7 @@ class UserDatabase {
             throw new \Exception(self::$userAlreadyExistsMessage);
             
         } else {
-            $hash = $this->hashPassword($password);
-            $query = "INSERT INTO " . self::$tableName . " (username, password) VALUES ('". $username ."', '". $hash ."')";
-            $this->connection->query($query);
+            $this->addUser($username, $password);
         }
     }
 
@@ -40,10 +40,17 @@ class UserDatabase {
         if ($this->userExists($username)) {
             if (!$this->passwordIsCorrect($username, $password)) {
                 throw new \Exception(self::$wrongNameOrPasswordMessage);
-            } 
+            }
         } else {
             throw new \Exception(self::$wrongNameOrPasswordMessage);
         }
+    }
+
+    private function addUser($username, $password) {
+        $hash = $this->hashPassword($password);
+        
+        $query = "(" . self::$rowUsername . "," . self::$rowPassword . ") VALUES (" . "'" . $username ."', '". $hash ."')";
+        $this->database->insertValueToTable(self::$tableName, $query);
     }
 
     private function hashPassword(string $password) : string {
@@ -51,39 +58,15 @@ class UserDatabase {
     }
 
     private function passwordIsCorrect(string $username, string $password) : bool {
-        $query = "SELECT ". self::$rowPassword ." FROM " . self::$tableName . " WHERE username LIKE BINARY '". $username ."'";
-        
-        $stmt = $this->connection->query($query);
-        $stmt = \mysqli_fetch_row($stmt);
+        $queryString = "WHERE username LIKE BINARY '". $username ."'";
+        $dbPassword = $this->database->getValueFromTable(self::$tableName, $queryString, self::$rowPassword);
 
-        return \password_verify($password, $stmt[0]);
+        return \password_verify($password, $dbPassword[0]);
     }
 
     private function userExists(string $username) : bool {
-        $query = "SELECT * FROM " . self::$tableName . " WHERE username LIKE BINARY '". $username ."'";
-        $userExists = 0;
-        
-        if($stmt = $this->connection->prepare($query)) {
-            $stmt->execute();
-            $stmt->store_result();
-    
-            $userExists = $stmt->num_rows;
-            $stmt->close();
-        }
-       
-        return $userExists == 1;
-    }
+        $query = "WHERE username LIKE BINARY '". $username ."'";
 
-    private function createUserTableIfNeeded() {
-        $createTable = "CREATE TABLE IF NOT EXISTS " . self::$tableName . " (
-            username VARCHAR(30) NOT NULL UNIQUE,
-            password VARCHAR(60) NOT NULL
-            )";
-
-        if($this->connection->query($createTable)) {
-           // Add message
-        } else {
-            // Add error message
-        }
+        return $this->database->isValueInTable(self::$tableName, $query);
     }
 }

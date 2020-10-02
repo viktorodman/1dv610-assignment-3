@@ -23,10 +23,10 @@ ini_set('display_errors', 'On');
 
 $db = new \Model\DAL\Database();
 
-$dbConnection = $db->getConnection();
+/* $dbConnection = $db->getConnection(); */
 
-$userdb = new \Model\DAL\UserDatabase($dbConnection);
-$cookiedb = new \Model\DAL\CookieDatabase($dbConnection);
+$userdb = new \Model\DAL\UserDatabase($db);
+$cookiedb = new \Model\DAL\CookieDatabase($db);
 
 $uss = new \Model\DAL\UserSessionStorage();
 $ucs = new \Model\DAL\UserCookieStorage($cookiedb);
