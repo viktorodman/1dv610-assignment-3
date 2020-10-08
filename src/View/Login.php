@@ -80,8 +80,8 @@ class Login {
 		$this->userSessionStorage->setSessionMessage(self::$goodByeMessage);
 		$this->userSessionStorage->removeUserSession();
 
-		if ($this->userCookieStorage->userWantsToLoginWithCookies()) {
-			$this->userCookieStorage->unsetCookies();
+		if ($this->userWantsToLoginWithCookies()) {
+			$this->unsetCookies();
 		}
 
 		$this->userSessionStorage->setMessageToBeViewed();
@@ -133,9 +133,10 @@ class Login {
 	}
 
 	public function getRequestUserCredentials() : \Model\Credentials {
-		$username = new \Model\Username($this->getRequestUsername());
-		$password = new \Model\Password($this->getRequestPassword());
-		return new \Model\Credentials($username, $password);
+		return new \Model\Credentials(
+			$this->getRequestUsername(),
+			$this->getRequestPassword()
+		);
 	}
 
 	public function userHasActiveSession() : bool {
@@ -148,26 +149,6 @@ class Login {
 	
 	public function getCookiePassword() : string {
         return $_COOKIE[self::$cookiePassword];
-	}
-
-	private function getUsername() : \Model\Username {
-		$requestUsername = $this->getRequestUsername();
-
-		if (empty($requestUsername)) {
-            throw new \Exception(self::$errorMessageNoUsername);
-		}
-		
-		return new \Model\Username($requestUsername);
-	}
-
-	private function getPassword() : \Model\Password {
-		$requestPassword = $this->getRequestPassword();
-
-		if (empty($requestPassword)) {
-            throw new \Exception(self::$errorMessageNoPassword);
-		}
-		
-		return new \Model\Password($requestPassword);
 	}
 
 	private function usernameWasSentInRequest() : bool {

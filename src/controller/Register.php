@@ -17,8 +17,10 @@ class Register {
     public function doRegister() {
         if ($this->registerView->userWantsToRegister()) {
             try {
-                $userCredentials = $this->registerView->getRegisterCredentials();
-                $user = new \Model\User($userCredentials);
+                $registerCredentials = $this->registerView->getRegisterCredentials();
+
+                $user = new \Model\User($registerCredentials->getUserCredentials());
+
                 $this->usersDAL->registerUser($user);
                 $this->registerView->reloadPageAndNotifyRegisteredAccount();
                 
@@ -27,6 +29,5 @@ class Register {
                 $this->registerView->reloadPageAndShowErrorMessage($error->getMessage());
             }
         }
-        
     }
 }

@@ -6,9 +6,6 @@ class Username {
     private $username;
 
     public function __construct(string $username) {
-        if (empty($requestUsername)) {
-            throw new \Exception(self::$errorMessageNoUsername);
-		}
         if (!preg_match('/^[a-zA-Z0-9]+$/', $username)) {
             throw new \Exception("Username contains invalid characters.");
         }

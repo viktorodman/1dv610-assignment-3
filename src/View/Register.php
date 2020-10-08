@@ -2,10 +2,7 @@
 
 namespace View;
 
-require_once('model/Username.php');
-require_once('model/Password.php');
-require_once('model/Credentials.php');
-require_once('Login.php');
+require_once('model/RegisterCredentials.php');
 
 class Register {
     private static $registerURLID = 'register';
@@ -14,9 +11,6 @@ class Register {
 	private static $passwordRepeat = 'RegisterView::PasswordRepeat';
     private static $name = 'RegisterView::UserName';
     private static $register = 'RegisterView::Register';
-    private static $passwordToShortMessage = 'Password has too few characters, at least 6 characters.';
-    private static $usernameToShortMessage = 'Username has too few characters, at least 3 characters.';
-    private static $passwordDoesNotMatchMessage = 'Passwords do not match.';
     private static $registeredUserMessage = 'Registered new user.';
     private static $registerUserURL = 'Location: /?register';
     private static $indexURL = 'Location: /';
@@ -44,7 +38,7 @@ class Register {
     
     public function reloadPageAndNotifyRegisteredAccount() {
         $this->userSession->setSessionMessage(self::$registeredUserMessage);
-		$this->userSession->setRemeberedUsername($_POST[self::$name]);
+		$this->userSession->setRemeberedUsername($this->getRequestUsername());
 
         $this->userSession->setUsernameToBeRemembered();
         $this->userSession->setMessageToBeViewed();
@@ -56,7 +50,7 @@ class Register {
 
     public function reloadPageAndShowErrorMessage(string $errorMessage) {
 		$this->userSession->setSessionMessage($errorMessage);
-		$this->userSession->setRemeberedUsername($_POST[self::$name]);
+		$this->userSession->setRemeberedUsername($this->getRequestUsername());
 
 		$this->userSession->setMessageToBeViewed();
 		$this->userSession->setUsernameToBeRemembered();
@@ -69,31 +63,25 @@ class Register {
         return isset($_POST[self::$register]);
     }
 
-    public function getRegisterCredentials() {
-        if(strlen($_POST[self::$name]) < 3 and strlen($_POST[self::$password]) < 6) {
-            throw new \Exception(self::$usernameToShortMessage . '<br>' . self::$passwordToShortMessage);
-        }
-
-        return new \Model\Credentials($this->getUsername(), $this->getPassword());
+    public function getRegisterCredentials() : \Model\RegisterCredentials {
+        return new \Model\RegisterCredentials(
+            $this->getRequestUsername(),
+            $this->getRequestPassword(),
+            $this->getRequestRepeatedPassword()
+        );
     }
 
-    private function getUsername() : \Model\Username {
-        if (strlen($_POST[self::$name]) < 3) {
-            throw new \Exception(self::$usernameToShortMessage);
-        }
-        return new \Model\Username($_POST[self::$name]);
+    private function getRequestUsername() : string{
+        return $_POST[self::$name];
     }
 
 
-    private function getPassword() : \Model\Password {
-        if (strlen($_POST[self::$password]) < 6) {
-            throw new \Exception(self::$passwordToShortMessage);
-        }
-        if ($_POST[self::$password] !== $_POST[self::$passwordRepeat]) {
-            throw new \Exception(self::$passwordDoesNotMatchMessage);
-        }
+    private function getRequestPassword() : string {
+        return $_POST[self::$password];
+    }
 
-        return new \Model\Password($_POST[self::$password]);
+    private function getRequestRepeatedPassword() : string {
+        return $_POST[self::$passwordRepeat];
     }
 
     private function generateRegisterFormHTML($errorMessage, $remeberedUsername) {

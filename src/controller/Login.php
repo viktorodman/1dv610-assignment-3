@@ -34,9 +34,9 @@ class Login {
                 if ($this->loginView->userWantsToLogin()) {
 
                     if ($this->loginView->userWantsToLoginWithCookies()) {
-                        $this->loginWithCookies();
+                        $this->attemptLoginWithCookies();
                     } else {
-                        $this->login();
+                        $this->attemptLogin();
                     }
                     $this->loginView->reloadPageAndLogin();
                 }
@@ -46,10 +46,10 @@ class Login {
         }
     }
 
-    private function login () {
+    private function attemptLogin () {
         $userCredentials = $this->loginView->getRequestUserCredentials();
-        $user = new \Model\User($userCredentials);
-        $this->usersDAL->loginUser($user);
+
+        $this->usersDAL->loginUser(new \Model\User($userCredentials));
         
         if ($this->loginView->userWantsToBeRemembered()) {
             $userCookie = new \Model\UserCookie($userCredentials->getUsername());
@@ -59,7 +59,7 @@ class Login {
         }   
     }
 
-    private function loginWithCookies() {
+    private function attemptLoginWithCookies() {
         $cookieUsername = $this->loginView->getCookieUsername();
         $cookiePassword = $this->loginView->getCookiePassword();
 
