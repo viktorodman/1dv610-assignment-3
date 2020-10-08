@@ -3,7 +3,7 @@
 class Settings {
 
     public function __construct() {
-        $url = getenv('JAWSDB_URL');
+        $url = getenv('JAWSDB_URL2');
         $dbparts = parse_url($url);
 
         $hostname = $dbparts['host'];
