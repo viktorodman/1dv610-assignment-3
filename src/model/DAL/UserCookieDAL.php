@@ -73,7 +73,7 @@ class UserCookieDAL {
         $query = "SELECT * FROM " . self::$tableName . " WHERE cookieuser=?";
         $userExists = 0;
         
-        if($stmt = $this->connection->prepare($query)) {
+        if($stmt = $dbConnection->prepare($query)) {
             $stmt->bind_param("s", $cookieUsername);
             $stmt->execute();
             $stmt->store_result();
