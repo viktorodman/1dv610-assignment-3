@@ -12,6 +12,7 @@ require_once('controller/Layout.php');
 require_once('controller/Register.php');
 
 require_once('model/DAL/Database.php');
+require_once('../Settings.php');
 require_once('model/DAL/UserDatabase.php');
 require_once('model/DAL/CookieDatabase.php');
 require_once('model/DAL/UserSessionStorage.php');
@@ -22,11 +23,12 @@ ini_set('display_errors', 'On');
 
 
 $db = new \Model\DAL\Database();
+$settings = new \Settings();
 
 /* $dbConnection = $db->getConnection(); */
 
-$userdb = new \Model\DAL\UserDatabase($db);
-$cookiedb = new \Model\DAL\CookieDatabase($db);
+$userdb = new \Model\DAL\UserDatabase($settings);
+$cookiedb = new \Model\DAL\CookieDatabase($settings->getDBConnection());
 
 $uss = new \Model\DAL\UserSessionStorage();
 $ucs = new \Model\DAL\UserCookieStorage($cookiedb);
@@ -41,6 +43,8 @@ $registerView = new \View\Register($uss);
 $registerController = new \Controller\Register($registerView, $userdb);
 $loginController = new \Controller\Login($loginView, $userdb);
 $layoutController = new \Controller\Layout($layoutView);
+
+//  För att skapa controllers behöver jag RegisterView, LoginView och LayoutView Samt: UserDb
 
 $registerController->doRegister();
 $loginController->doLogin();

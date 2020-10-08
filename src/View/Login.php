@@ -2,8 +2,7 @@
 
 namespace View;
 
-require_once('model/Username.php');
-require_once('model/Password.php');
+
 require_once('model/Credentials.php');
 
 class Login {
@@ -13,20 +12,19 @@ class Login {
 	private static $password = 'LoginView::Password';
 	private static $keep = 'LoginView::KeepMeLoggedIn';
 	private static $messageId = 'LoginView::Message';
-	private static $usernameField = 'LoginView::LoginField';
-	private static $errorMessageNoUsername = 'Username is missing';
-	private static $errorMessageNoPassword = 'Password is missing';
+	private static $cookieName = 'LoginView::CookieName';
+	private static $cookiePassword = 'LoginView::CookiePassword';
 	private static $welcomeMessage = 'Welcome';
 	private static $goodByeMessage = 'Bye bye!';
 	private static $loginCookieMessage = "Welcome back with cookie";
+	private static $loginRemeberMessage = "Welcome and you will be remembered";
 
 	private $userSessionStorage;
-	private $userCookieStorage;
+	private $shouldBeReloaded = false;
 	
 
-	public function __construct(\Model\DAL\UserSessionStorage $userSessionStorage, \Model\DAL\UserCookieStorage $userCookieStorage) {
+	public function __construct(\Model\DAL\UserSession $userSessionStorage) {
 		$this->userSessionStorage = $userSessionStorage;
-		$this->userCookieStorage = $userCookieStorage;
 	}
 
 	
@@ -40,27 +38,43 @@ class Login {
 	public function response() {
 		$remeberedUsername = $this->userSessionStorage->getRememberedUsername();
 		$message = $this->userSessionStorage->getSessionMessage();
-		$response;
-
+		
 		if ($this->userHasActiveSession()) {
 			$response = $this->generateLogoutButtonHTML($message);
 		} else {
 			$response = $this->generateLoginFormHTML($message, $remeberedUsername);
 		}
-		
-		
+
 		return $response;
 	}
 
-	public function reloadPageAndLogin() {
-		$this->userSessionStorage->setSessionMessage(self::$welcomeMessage);
-		$this->userSessionStorage->setSessionUser(self::$name);
-
-		$this->userSessionStorage->setMessageToBeViewed();
-
-		header('Location: /');
+	public function doHeaders() {
+		if ($this->shouldBeReloaded) {
+			header('Location: /');
+		}
 	}
 
+	public function reloadPageAndLogin() {
+		$message = '';
+		$username = '';
+
+		if ($this->userWantsToBeRemembered()) {
+			$message = self::$loginRemeberMessage;
+			$username = $this->getRequestUsername();
+		} else if ($this->userWantsToLoginWithCookies()) {
+			$message = self::$loginCookieMessage;
+			$username = $this->getCookieUsername();
+		} else {
+			$message = self::$welcomeMessage;
+			$username = $this->getRequestUsername();
+		}
+
+		$this->userSessionStorage->setSessionMessage($message);
+		$this->userSessionStorage->setSessionUser($username);
+		$this->userSessionStorage->setMessageToBeViewed();
+
+		$this->shouldBeReloaded = true;
+	}
 
 	public function reloadPageAndLogout() {
 		$this->userSessionStorage->setSessionMessage(self::$goodByeMessage);
@@ -72,78 +86,101 @@ class Login {
 
 		$this->userSessionStorage->setMessageToBeViewed();
 		
-		header('Location: /');
+		$this->shouldBeReloaded = true;
 	}
-
-	public function reloadPageAndLoginWithCookie() {
-		$username;
-
-		$this->userSessionStorage->setSessionMessage(self::$loginCookieMessage);
-		if (isset($_POST[self::$name])) {
-			$username = $_POST[self::$name];
-		} else {
-			$username = $this->userCookieStorage->getCookieUsername();
-		}
-
-		$this->userSessionStorage->setSessionUser($username);
-
-		$this->userSessionStorage->setMessageToBeViewed();
-
-		header('Location: /');
-	}
-
 
 	public function reloadPageAndShowErrorMessage(string $errorMessage) {
 		$this->userSessionStorage->setSessionMessage($errorMessage);
 		
-		if (isset($_POST[self::$name])) {
-			$this->userSessionStorage->setRemeberedUsername($_POST[self::$name]);
+		if ($this->usernameWasSentInRequest()) {
+			$this->userSessionStorage->setRemeberedUsername($this->getRequestUsername());
 			$this->userSessionStorage->setUsernameToBeRemembered();
 			
 		}
 
 		if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-			header('Location: /');
+			$this->shouldBeReloaded = true;
 		}
 		
 
 		$this->userSessionStorage->setMessageToBeViewed();
-		
 	}
 
-	public function userWantsToBeRemembered() : bool {
-		return isset($_POST[self::$keep]);
+	public function unsetCookies() {
+        setcookie(self::$cookieName, '', time()-70000000);
+        setcookie(self::$cookiePassword, '', time()-70000000);
+	}
+	
+	public function setUserCookies(\Model\UserCookie $userCookie) {
+        setcookie(self::$cookieName, $userCookie->getCookieUsername(), $userCookie->getCookieDuration());
+        setcookie(self::$cookiePassword, $userCookie->getCookiePassword(), $userCookie->getCookieDuration());
 	}
 
 	public function userWantsToLogin () : bool {
 		return isset($_POST[self::$login]);
 	}
 
+	public function userWantsToLoginWithCookies() : bool {
+		return isset($_COOKIE[self::$cookieName]) && isset($_COOKIE[self::$cookiePassword]);
+	}
+
 	public function userWantsToLogout () : bool {
 		return isset($_POST[self::$logout]);
 	}
 
-	public function userWantsToLoginWithCookies() : bool {
-		return $this->userCookieStorage->userWantsToLoginWithCookies();
+	public function userWantsToBeRemembered() : bool {
+		return isset($_POST[self::$keep]);
 	}
 
 	public function getRequestUserCredentials() : \Model\Credentials {
-		return new \Model\Credentials($this->getRequestUsername(), $this->getRequestPassword());
+		$username = new \Model\Username($this->getRequestUsername());
+		$password = new \Model\Password($this->getRequestPassword());
+		return new \Model\Credentials($username, $password);
 	}
 
 	public function userHasActiveSession() : bool {
 		return $this->userSessionStorage->userSessionIsActive();
 	}
-
-	public function validateCookies() {
-		$this->userCookieStorage->validateUserCookies();
-	}
-
-	public function createUserCookie() {
-		$this->userCookieStorage->createUserCookies($_POST[self::$name]);
-	}
-
 	
+	public function getCookieUsername() : string {
+        return $_COOKIE[self::$cookieName];
+	}
+	
+	public function getCookiePassword() : string {
+        return $_COOKIE[self::$cookiePassword];
+	}
+
+	private function getUsername() : \Model\Username {
+		$requestUsername = $this->getRequestUsername();
+
+		if (empty($requestUsername)) {
+            throw new \Exception(self::$errorMessageNoUsername);
+		}
+		
+		return new \Model\Username($requestUsername);
+	}
+
+	private function getPassword() : \Model\Password {
+		$requestPassword = $this->getRequestPassword();
+
+		if (empty($requestPassword)) {
+            throw new \Exception(self::$errorMessageNoPassword);
+		}
+		
+		return new \Model\Password($requestPassword);
+	}
+
+	private function usernameWasSentInRequest() : bool {
+		return isset($_POST[self::$name]);
+	} 
+
+	private function getRequestUsername() : string {
+		return $_POST[self::$name];
+	}
+
+	private function getRequestPassword() : string {
+		return $_POST[self::$password];
+	}	
 	
 	/**
 	* Generate HTML code on the output buffer for the logout button
@@ -181,23 +218,4 @@ class Login {
 			</form>
 		';
 	}
-
-	
-	
-	private function getRequestUsername() : \Model\Username {
-		if (empty($_POST[self::$name])) {
-            throw new \Exception(self::$errorMessageNoUsername);
-		}
-		
-		return new \Model\Username($_POST[self::$name]);
-	}
-
-	private function getRequestPassword() : \Model\Password {
-		if (empty($_POST[self::$password])) {
-            throw new \Exception(self::$errorMessageNoPassword);
-		}
-		
-		return new \Model\Password($_POST[self::$password]);
-	}
-	
 }

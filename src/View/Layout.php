@@ -7,18 +7,14 @@ class Layout {
   private static $registerURLID = 'register';
   private static $registerText = 'Register a new user';
   private static $goBackText = 'Back to login';
-  private $shouldDisplayRegisterForm = false;
   private $linkText;
   private $navigationURL;
+  private $dateTimeView;
 
   
   public function render($isLoggedIn, \View\Login $v, \View\DateTime $dtv, \View\Register $regv) {
-    $correctForm = "";
-    $url = "";
-    
 
-
-    if ($this->shouldDisplayRegisterForm) {
+    if ($this->shouldShowRegisterForm()) {
         $correctForm = $regv->response();
         $url = self::$registerURLID;
     } else {
@@ -49,7 +45,7 @@ class Layout {
     ';
   }
 
-  public function shouldShowRegisterForm() : bool {
+  private function shouldShowRegisterForm() : bool {
       return isset($_GET[self::$registerURLID]);
   }
 

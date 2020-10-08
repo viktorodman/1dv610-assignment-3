@@ -18,19 +18,52 @@ class Register {
     private static $usernameToShortMessage = 'Username has too few characters, at least 3 characters.';
     private static $passwordDoesNotMatchMessage = 'Passwords do not match.';
     private static $registeredUserMessage = 'Registered new user.';
+    private static $registerUserURL = 'Location: /?register';
+    private static $indexURL = 'Location: /';
 
-    private $userSessionStorage;
+    private $shouldBeReloaded = false;
+    private $reloadURL;
+    private $userSession;
  
-    public function __construct(\Model\DAL\UserSessionStorage $userSessionStorage) {
-        $this->userSessionStorage = $userSessionStorage;
+    public function __construct(\Model\DAL\UserSession $userSession) {
+        $this->userSession = $userSession;
     }
 
     public function response() {
-        $remeberedUsername = $this->userSessionStorage->getRememberedUsername();
-        $errorMessage = $this->userSessionStorage->getSessionMessage();
+        $remeberedUsername = $this->userSession->getRememberedUsername();
+        $errorMessage = $this->userSession->getSessionMessage();
         
         return $this->generateRegisterFormHTML($errorMessage, $remeberedUsername);
     }
+
+    public function doHeaders() {
+		if ($this->shouldBeReloaded) {
+			header($this->reloadURL);
+		}
+    }
+    
+    public function reloadPageAndNotifyRegisteredAccount() {
+        $this->userSession->setSessionMessage(self::$registeredUserMessage);
+		$this->userSession->setRemeberedUsername($_POST[self::$name]);
+
+        $this->userSession->setUsernameToBeRemembered();
+        $this->userSession->setMessageToBeViewed();
+
+        $this->shouldBeReloaded = true;
+        $this->reloadURL = self::$indexURL;
+    }
+
+
+    public function reloadPageAndShowErrorMessage(string $errorMessage) {
+		$this->userSession->setSessionMessage($errorMessage);
+		$this->userSession->setRemeberedUsername($_POST[self::$name]);
+
+		$this->userSession->setMessageToBeViewed();
+		$this->userSession->setUsernameToBeRemembered();
+		
+		$this->shouldBeReloaded = true;
+        $this->reloadURL = self::$registerUserURL;
+	}
 
     public function userWantsToRegister() : bool {
         return isset($_POST[self::$register]);
@@ -43,27 +76,6 @@ class Register {
 
         return new \Model\Credentials($this->getUsername(), $this->getPassword());
     }
-
-    public function reloadPageAndNotifyRegisteredAccount() {
-        $this->userSessionStorage->setSessionMessage(self::$registeredUserMessage);
-		$this->userSessionStorage->setRemeberedUsername($_POST[self::$name]);
-
-        $this->userSessionStorage->setUsernameToBeRemembered();
-        $this->userSessionStorage->setMessageToBeViewed();
-
-        header('Location: /');
-    }
-
-
-    public function reloadPageAndShowErrorMessage(string $errorMessage) {
-		$this->userSessionStorage->setSessionMessage($errorMessage);
-		$this->userSessionStorage->setRemeberedUsername($_POST[self::$name]);
-
-		$this->userSessionStorage->setMessageToBeViewed();
-		$this->userSessionStorage->setUsernameToBeRemembered();
-		
-		header('Location: /?register');
-	}
 
     private function getUsername() : \Model\Username {
         if (strlen($_POST[self::$name]) < 3) {

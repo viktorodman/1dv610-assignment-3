@@ -7,11 +7,11 @@ require_once('model/User.php');
 class Register {
     
     private $registerView;
-    private $userDatabase;
+    private $usersDAL;
 
-    public function __construct(\View\Register $registerView, \Model\DAL\UserDatabase $userDB) {
+    public function __construct(\View\Register $registerView, \Model\DAL\UsersDAL $usersDAL) {
         $this->registerView = $registerView;
-        $this->userDatabase= $userDB;
+        $this->usersDAL= $usersDAL;
     }
 
     public function doRegister() {
@@ -19,7 +19,7 @@ class Register {
             try {
                 $userCredentials = $this->registerView->getRegisterCredentials();
                 $user = new \Model\User($userCredentials);
-                $this->userDatabase->registerUser($user);
+                $this->usersDAL->registerUser($user);
                 $this->registerView->reloadPageAndNotifyRegisteredAccount();
                 
                 //  Try to register user on database

@@ -2,7 +2,8 @@
 
 namespace Model\DAL;
 
-class UserSessionStorage {
+class UserSession {
+    
     private static $messageSessionIndex = "messageSessionIndex";
 	private static $rememberedUserSessionIndex = "rememberedUserSessionIndex";
     private static $userSessionIndex = "userSessionIndex";
