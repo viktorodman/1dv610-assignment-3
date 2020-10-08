@@ -15,8 +15,8 @@ class Layout {
   public function render($isLoggedIn, \View\Login $v, \View\DateTime $dtv, \View\Register $regv) {
 
     if ($this->shouldShowRegisterForm()) {
+        $this->linkText = self::$goBackText;
         $correctForm = $regv->response();
-        $url = self::$registerURLID;
     } else {
       $this->linkText = self::$registerText;
       $this->navigationURL = self::$registerURLID;
