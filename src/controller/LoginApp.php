@@ -47,7 +47,6 @@ class LoginApp {
     }
 
     private function handleInput() {
-        //  För att skapa controllers behöver jag RegisterView, LoginView och LayoutView Samt: UserDb
         $loginController = new \Controller\Login(
             $this->loginView,
             $this->usersDAL,
