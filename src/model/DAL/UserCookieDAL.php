@@ -30,7 +30,6 @@ class UserCookieDAL {
 
     public function updateAndSaveCookieInfo(\Model\UserCookie $userCookie) {
         $dbConnection = $this->settings->getDBConnection();
-
         $query = "UPDATE " . self::$tableName . " SET cookiepassword=?, expiredate=? WHERE cookieuser=?";
 
         if ($stmt = $dbConnection->prepare($query)) {
@@ -98,6 +97,7 @@ class UserCookieDAL {
 
             $stmt->fetch();
 
+
             if ($savedPassword === $cookiePassword) {
                 $stmt->close();
                 return true;
@@ -119,6 +119,9 @@ class UserCookieDAL {
             $stmt->execute();
 
             $stmt->bind_result($cookieExpiredate);
+
+            $stmt->fetch();
+
 
             if ($cookieExpiredate > time()) {
                 return false;

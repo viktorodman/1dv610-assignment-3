@@ -31,13 +31,11 @@ class Login {
     public function doLogin() {
         try {
             if (!$this->loginView->userHasActiveSession()) {
-                if ($this->loginView->userWantsToLogin()) {
-
-                    if ($this->loginView->userWantsToLoginWithCookies()) {
-                        $this->attemptLoginWithCookies();
-                    } else {
-                        $this->attemptLogin();
-                    }
+                if ($this->loginView->userWantsToLoginWithCookies()) {
+                    $this->attemptLoginWithCookies();
+                    $this->loginView->reloadPageAndLogin();
+                } elseif($this->loginView->userWantsToLogin()){
+                    $this->attemptLogin();
                     $this->loginView->reloadPageAndLogin();
                 }
             }
@@ -62,6 +60,7 @@ class Login {
     private function attemptLoginWithCookies() {
         $cookieUsername = $this->loginView->getCookieUsername();
         $cookiePassword = $this->loginView->getCookiePassword();
+
 
         if ($this->cookieDAL->cookiesAreValid($cookieUsername, $cookiePassword)) {
             $userCookie = new \Model\UserCookie($cookieUsername);
