@@ -9,7 +9,6 @@ class Layout {
   private static $goBackText = 'Back to login';
   private $linkText;
   private $navigationURL;
-  private $dateTimeView;
 
   
   public function render($isLoggedIn, \View\Login $v, \View\DateTime $dtv, \View\Register $regv) {
