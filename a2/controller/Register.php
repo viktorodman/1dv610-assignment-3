@@ -7,11 +7,11 @@ require_once('model/User.php');
 class Register {
     
     private $registerView;
-    private $usersDAL;
+    private $authenticator;
 
-    public function __construct(\View\Register $registerView, \Model\DAL\UsersDAL $usersDAL) {
+    public function __construct(\View\Register $registerView, \Authenticator $authenticator) {
         $this->registerView = $registerView;
-        $this->usersDAL= $usersDAL;
+        $this->authenticator= $authenticator;
     }
 
     public function doRegister() {

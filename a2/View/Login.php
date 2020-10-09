@@ -19,12 +19,12 @@ class Login {
 	private static $loginCookieMessage = "Welcome back with cookie";
 	private static $loginRemeberMessage = "Welcome and you will be remembered";
 
-	private $userSessionStorage;
+	private $authenticator;
 	private $shouldBeReloaded = false;
 	
 
-	public function __construct(\Model\DAL\UserSession $userSessionStorage) {
-		$this->userSessionStorage = $userSessionStorage;
+	public function __construct(\Authenticator $authenticator) {
+		$this->$authenticator = $authenticator;
 	}
 
 	
@@ -36,10 +36,10 @@ class Login {
 	 * @return  void BUT writes to standard output and cookies!
 	 */
 	public function response() {
-		$remeberedUsername = $this->userSessionStorage->getRememberedUsername();
-		$message = $this->userSessionStorage->getSessionMessage();
+		$remeberedUsername = $this->authenticator->getRemeberedUsername();
+		$message = $this->authenticator->getSessionMessage();
 		
-		if ($this->userHasActiveSession()) {
+		if ($this->authenticator->isLoggedIn()) {
 			$response = $this->generateLogoutButtonHTML($message);
 		} else {
 			$response = $this->generateLoginFormHTML($message, $remeberedUsername);
@@ -69,41 +69,33 @@ class Login {
 			$username = $this->getRequestUsername();
 		}
 
-		$this->userSessionStorage->setSessionMessage($message);
-		$this->userSessionStorage->setSessionUser($username);
-		$this->userSessionStorage->setMessageToBeViewed();
+		$this->authenticator->remeberSuccessfulLogin($message, $username);
 
 		$this->shouldBeReloaded = true;
 	}
 
 	public function reloadPageAndLogout() {
-		$this->userSessionStorage->setSessionMessage(self::$goodByeMessage);
-		$this->userSessionStorage->removeUserSession();
 
 		if ($this->userWantsToLoginWithCookies()) {
 			$this->unsetCookies();
 		}
 
-		$this->userSessionStorage->setMessageToBeViewed();
+		$this->authenticator->attemptLogout(self::$goodByeMessage);
 		
 		$this->shouldBeReloaded = true;
 	}
 
 	public function reloadPageAndShowErrorMessage(string $errorMessage) {
-		$this->userSessionStorage->setSessionMessage($errorMessage);
-		
+		$username = '';
 		if ($this->usernameWasSentInRequest()) {
-			$this->userSessionStorage->setRemeberedUsername($this->getRequestUsername());
-			$this->userSessionStorage->setUsernameToBeRemembered();
-			
+			$username = $this->getRequestUsername();
 		}
 
 		if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 			$this->shouldBeReloaded = true;
 		}
-		
 
-		$this->userSessionStorage->setMessageToBeViewed();
+		$this->authenticator->remeberFailedLogin($username, $errorMessage);
 	}
 
 	public function unsetCookies() {
@@ -128,20 +120,18 @@ class Login {
 		return isset($_POST[self::$logout]);
 	}
 
+	public function getRequestUsername() : string {
+		return $_POST[self::$name];
+	}
+
+	public function getRequestPassword() : string {
+		return $_POST[self::$password];
+	}	
+
 	public function userWantsToBeRemembered() : bool {
 		return isset($_POST[self::$keep]);
 	}
 
-	public function getRequestUserCredentials() : \Model\Credentials {
-		return new \Model\Credentials(
-			$this->getRequestUsername(),
-			$this->getRequestPassword()
-		);
-	}
-
-	public function userHasActiveSession() : bool {
-		return $this->userSessionStorage->userSessionIsActive();
-	}
 	
 	public function getCookieUsername() : string {
         return $_COOKIE[self::$cookieName];
@@ -154,14 +144,6 @@ class Login {
 	private function usernameWasSentInRequest() : bool {
 		return isset($_POST[self::$name]);
 	} 
-
-	private function getRequestUsername() : string {
-		return $_POST[self::$name];
-	}
-
-	private function getRequestPassword() : string {
-		return $_POST[self::$password];
-	}	
 	
 	/**
 	* Generate HTML code on the output buffer for the logout button

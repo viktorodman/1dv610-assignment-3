@@ -16,22 +16,19 @@ class LoginApp {
 
     private $settings;
     private $userSession;
-    private $usersDAL;
+    private $authenticator;
     private $userCookieDAL;
     private $isLoggedIn;
 
     private $loginView;
     private $registerView;
 
-    public function __construct(\Settings $settings) {
+    public function __construct(\Settings $settings, \Authenticator $authenticator) {
         $this->settings = $settings;
+        $this->authenticator = $authenticator;
 
-        $this->userSession = new \Model\DAL\UserSession();
-        $this->usersDAL = new \Model\DAL\UsersDAL($settings);
-        $this->userCookieDAL = new \Model\DAL\UserCookieDAL($settings);
-
-        $this->loginView = new \View\Login($this->userSession);
-        $this->registerView = new \View\Register($this->userSession);
+        $this->loginView = new \View\Login($authenticator);
+        $this->registerView = new \View\Register();
     }
 
     public function run() {
@@ -47,16 +44,9 @@ class LoginApp {
     }
 
     private function handleInput() {
-        $loginController = new \Controller\Login(
-            $this->loginView,
-            $this->usersDAL,
-            $this->userCookieDAL
-        );
+        $loginController = new \Controller\Login($this->loginView, $this->authenticator);
 
-        $registerController = new \Controller\Register(
-            $this->registerView,
-            $this->usersDAL
-        );
+        $registerController = new \Controller\Register($this->registerView);
 
         $loginController->doLogin();
         $loginController->doLogout();

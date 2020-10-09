@@ -8,34 +8,38 @@ require_once('model/UserCookie.php');
 class Login {
 
     private $loginView;
-    private $usersDAL;
-    private $cookieDAL;
+    private $authenticator;
 
-    public function __construct(\View\Login $loginView,
-                                \Model\DAL\UsersDAL $usersDAL,
-                                \Model\DAL\UserCookieDAL $cookieDAL) {
+    public function __construct(\View\Login $loginView, \Authenticator $authenticator) {
                                     
         $this->loginView = $loginView;
-        $this->usersDAL = $usersDAL;
-        $this->cookieDAL = $cookieDAL;
+        $this->authenticator = $authenticator;
     }
 
     public function doLogout() {
-        if ($this->loginView->userHasActiveSession()) {
+        if ($this->authenticator->isLoggedIn()) {
             if ($this->loginView->userWantsToLogout()) {
                 $this->loginView->reloadPageAndLogout();
             }
-        } 
+        }
     }
 
     public function doLogin() {
         try {
-            if (!$this->loginView->userHasActiveSession()) {
+            if ($this->authenticator->isLoggedIn() === false) {
                 if ($this->loginView->userWantsToLoginWithCookies()) {
-                    $this->attemptLoginWithCookies();
+
+                    $updatedCookieInformation = $this->authenticator->attemptLoginWithCookies(
+                        $this->loginView->getCookieUsername(),
+                        $this->loginView->getCookiePassword()
+                    );
+            
+                    $this->loginView->setUserCookies($updatedCookieInformation);
                     $this->loginView->reloadPageAndLogin();
+
                 } elseif($this->loginView->userWantsToLogin()){
-                    $this->attemptLogin();
+
+                    
                     $this->loginView->reloadPageAndLogin();
                 }
             }
@@ -50,26 +54,15 @@ class Login {
         $this->usersDAL->loginUser(new \Model\User($userCredentials));
         
         if ($this->loginView->userWantsToBeRemembered()) {
-            $userCookie = new \Model\UserCookie($userCredentials->getUsername());
-
-            $this->cookieDAL->saveCookieInformation($userCookie);
+            $userCookie = $this->authenticator->attemptLoginAndRememberUser(
+                $this->loginView->getRequestUsername(),
+                $this->loginView->getRequestPassword()
+            );
             $this->loginView->setUserCookies($userCookie);
-        }   
+        }
     }
 
     private function attemptLoginWithCookies() {
-        $cookieUsername = $this->loginView->getCookieUsername();
-        $cookiePassword = $this->loginView->getCookiePassword();
-
-
-        if ($this->cookieDAL->cookiesAreValid($cookieUsername, $cookiePassword)) {
-            $userCookie = new \Model\UserCookie($cookieUsername);
-
-            $this->cookieDAL->updateAndSaveCookieInfo($userCookie);
-            $this->loginView->setUserCookies($userCookie);
-        } else {
-            throw new \Exception("Wrong information in cookies");
-        }
         
     }
 }
