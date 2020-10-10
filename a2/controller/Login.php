@@ -2,9 +2,6 @@
 
 namespace Controller;
 
-require_once('model/User.php');
-require_once('model/UserCookie.php');
-
 class Login {
 
     private $loginView;
@@ -38,8 +35,7 @@ class Login {
                     $this->loginView->reloadPageAndLogin();
 
                 } elseif($this->loginView->userWantsToLogin()){
-
-                    
+                    $this->attemptLogin();
                     $this->loginView->reloadPageAndLogin();
                 }
             }
@@ -49,20 +45,17 @@ class Login {
     }
 
     private function attemptLogin () {
-        $userCredentials = $this->loginView->getRequestUserCredentials();
-
-        $this->usersDAL->loginUser(new \Model\User($userCredentials));
-        
         if ($this->loginView->userWantsToBeRemembered()) {
             $userCookie = $this->authenticator->attemptLoginAndRememberUser(
                 $this->loginView->getRequestUsername(),
                 $this->loginView->getRequestPassword()
             );
             $this->loginView->setUserCookies($userCookie);
+        } else {
+            $this->authenticator->attemptLogin(
+                $this->loginView->getRequestUsername(),
+                $this->loginView->getRequestPassword()
+            );
         }
-    }
-
-    private function attemptLoginWithCookies() {
-        
     }
 }

@@ -2,8 +2,6 @@
 
 namespace Controller;
 
-require_once('model/User.php');
-
 class Register {
     
     private $registerView;
@@ -17,14 +15,13 @@ class Register {
     public function doRegister() {
         if ($this->registerView->userWantsToRegister()) {
             try {
-                $registerCredentials = $this->registerView->getRegisterCredentials();
+                $this->authenticator->attemptRegisterUser(
+                    $this->registerView->getRequestUsername(),
+                    $this->registerView->getRequestPassword(),
+                    $this->registerView->getRequestRepeatedPassword()
+                );
 
-                $user = new \Model\User($registerCredentials->getUserCredentials());
-
-                $this->usersDAL->registerUser($user);
-                $this->registerView->reloadPageAndNotifyRegisteredAccount();
-                
-                //  Try to register user on database
+                $this->registerView->reloadPageAndRemeberRegisteredAccount();
             } catch (\Throwable $error) {
                 $this->registerView->reloadPageAndShowErrorMessage($error->getMessage());
             }

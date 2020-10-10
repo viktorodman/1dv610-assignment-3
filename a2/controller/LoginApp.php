@@ -2,9 +2,6 @@
 
 namespace Controller;
 
-require_once('model/DAL/UserSession.php');
-require_once('model/DAL/UsersDAL.php');
-require_once('model/DAL/UserCookieDAL.php');
 require_once('controller/Login.php');
 require_once('controller/Register.php');
 require_once('View/Layout.php');
@@ -17,7 +14,6 @@ class LoginApp {
     private $settings;
     private $userSession;
     private $authenticator;
-    private $userCookieDAL;
     private $isLoggedIn;
 
     private $loginView;
@@ -28,7 +24,7 @@ class LoginApp {
         $this->authenticator = $authenticator;
 
         $this->loginView = new \View\Login($authenticator);
-        $this->registerView = new \View\Register();
+        $this->registerView = new \View\Register($authenticator);
     }
 
     public function run() {
@@ -40,13 +36,13 @@ class LoginApp {
     }
 
     private function loadState() {
-       $this->isLoggedIn = $this->userSession->userSessionIsActive();
+       $this->isLoggedIn = $this->authenticator->isLoggedIn();
     }
 
     private function handleInput() {
         $loginController = new \Controller\Login($this->loginView, $this->authenticator);
 
-        $registerController = new \Controller\Register($this->registerView);
+        $registerController = new \Controller\Register($this->registerView, $this->authenticator);
 
         $loginController->doLogin();
         $loginController->doLogout();

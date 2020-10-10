@@ -3,8 +3,6 @@
 namespace View;
 
 
-require_once('model/Credentials.php');
-
 class Login {
 	private static $login = 'LoginView::Login';
 	private static $logout = 'LoginView::Logout';
@@ -24,7 +22,7 @@ class Login {
 	
 
 	public function __construct(\Authenticator $authenticator) {
-		$this->$authenticator = $authenticator;
+		$this->authenticator = $authenticator;
 	}
 
 	
@@ -50,14 +48,11 @@ class Login {
 
 	public function doHeaders() {
 		if ($this->shouldBeReloaded) {
-			header('Location: /');
+			header('Location: /a2');
 		}
 	}
 
 	public function reloadPageAndLogin() {
-		$message = '';
-		$username = '';
-
 		if ($this->userWantsToBeRemembered()) {
 			$message = self::$loginRemeberMessage;
 			$username = $this->getRequestUsername();
@@ -69,7 +64,7 @@ class Login {
 			$username = $this->getRequestUsername();
 		}
 
-		$this->authenticator->remeberSuccessfulLogin($message, $username);
+		$this->authenticator->remeberSuccessfulLogin($username, $message);
 
 		$this->shouldBeReloaded = true;
 	}
@@ -116,6 +111,10 @@ class Login {
 		return isset($_COOKIE[self::$cookieName]) && isset($_COOKIE[self::$cookiePassword]);
 	}
 
+	public function userWantsToBeRemembered() : bool {
+		return isset($_POST[self::$keep]);
+	}
+
 	public function userWantsToLogout () : bool {
 		return isset($_POST[self::$logout]);
 	}
@@ -128,11 +127,6 @@ class Login {
 		return $_POST[self::$password];
 	}	
 
-	public function userWantsToBeRemembered() : bool {
-		return isset($_POST[self::$keep]);
-	}
-
-	
 	public function getCookieUsername() : string {
         return $_COOKIE[self::$cookieName];
 	}

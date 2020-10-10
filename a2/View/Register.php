@@ -2,8 +2,6 @@
 
 namespace View;
 
-require_once('model/RegisterCredentials.php');
-
 class Register {
     private static $registerURLID = 'register';
     private static $messageID = 'RegisterView::Message';
@@ -12,20 +10,20 @@ class Register {
     private static $name = 'RegisterView::UserName';
     private static $register = 'RegisterView::Register';
     private static $registeredUserMessage = 'Registered new user.';
-    private static $registerUserURL = 'Location: /?register';
-    private static $indexURL = 'Location: /';
+    private static $registerUserURL = 'Location: /a2?register';
+    private static $indexURL = 'Location: /a2';
 
     private $shouldBeReloaded = false;
     private $reloadURL;
-    private $userSession;
+    private $authenticator;
  
-    public function __construct(\Model\DAL\UserSession $userSession) {
-        $this->userSession = $userSession;
+    public function __construct(\Authenticator $authenticator) {
+        $this->authenticator = $authenticator;
     }
 
     public function response() {
-        $remeberedUsername = $this->userSession->getRememberedUsername();
-        $errorMessage = $this->userSession->getSessionMessage();
+        $remeberedUsername = $this->authenticator->getRemeberedUsername();
+        $errorMessage = $this->authenticator->getSessionMessage();
         
         return $this->generateRegisterFormHTML($errorMessage, $remeberedUsername);
     }
@@ -36,12 +34,11 @@ class Register {
 		}
     }
     
-    public function reloadPageAndNotifyRegisteredAccount() {
-        $this->userSession->setSessionMessage(self::$registeredUserMessage);
-		$this->userSession->setRemeberedUsername($this->getRequestUsername());
-
-        $this->userSession->setUsernameToBeRemembered();
-        $this->userSession->setMessageToBeViewed();
+    public function reloadPageAndRemeberRegisteredAccount() {
+        $this->authenticator->remeberSuccessfullRegistration(
+            $this->getRequestUsername(),
+            self::$registeredUserMessage
+        );
 
         $this->shouldBeReloaded = true;
         $this->reloadURL = self::$indexURL;
@@ -49,11 +46,10 @@ class Register {
 
 
     public function reloadPageAndShowErrorMessage(string $errorMessage) {
-		$this->userSession->setSessionMessage($errorMessage);
-		$this->userSession->setRemeberedUsername($this->getRequestUsername());
-
-		$this->userSession->setMessageToBeViewed();
-		$this->userSession->setUsernameToBeRemembered();
+        $this->authenticator->remeberFailedRegistration(
+            $this->getRequestUsername(),
+            $errorMessage
+        );
 		
 		$this->shouldBeReloaded = true;
         $this->reloadURL = self::$registerUserURL;
@@ -63,24 +59,16 @@ class Register {
         return isset($_POST[self::$register]);
     }
 
-    public function getRegisterCredentials() : \Model\RegisterCredentials {
-        return new \Model\RegisterCredentials(
-            $this->getRequestUsername(),
-            $this->getRequestPassword(),
-            $this->getRequestRepeatedPassword()
-        );
-    }
-
-    private function getRequestUsername() : string{
+    public function getRequestUsername() : string{
         return $_POST[self::$name];
     }
 
 
-    private function getRequestPassword() : string {
+    public function getRequestPassword() : string {
         return $_POST[self::$password];
     }
 
-    private function getRequestRepeatedPassword() : string {
+    public function getRequestRepeatedPassword() : string {
         return $_POST[self::$passwordRepeat];
     }
 
