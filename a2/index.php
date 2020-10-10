@@ -7,7 +7,10 @@ session_start();
 require_once('./Settings.php');
 require_once('controller/LoginApp.php');
 /* require_once('../common/loginModule/src/Authenticator.php'); */
-require_once(dirname(__FILE__) . '/../common/loginModule/src/Authenticator.php');
+/* require_once(dirname(__FILE__) . '/../common/loginModule/src/Authenticator.php'); */
+require_once($_SERVER['DOCUMENT_ROOT'] . '/common/loginModule/src/Authenticator.php');
+
+
 
 $settings = new \Settings();
 
