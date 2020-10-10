@@ -11,22 +11,22 @@ require_once('model/User.php');
 class Authenticator {
     private $dbConnection;
     private $userSession;
-    private $cookieDal;
-    private $usersDal;
+    private $cookieDAL;
+    private $usersDAL;
 
     public function __construct(\mysqli $dbConnection) {
         // TODO: Add something
         $this->dbConnection = $dbConnection;
         $this->userSession = new \Model\DAL\UserSession();
-        $this->cookieDal = new \Model\DAL\UserCookieDAL($dbConnection);
-        $this->usersDal = new \Model\DAL\UsersDAL($dbConnection);
+        $this->cookieDAL = new \Model\DAL\UserCookieDAL($dbConnection);
+        $this->usersDAL = new \Model\DAL\UsersDAL($dbConnection);
     }
 
     public function attemptLogin(string $username, string $password) {
         // TODO: Try to login a user
         $userCredentials = new \Model\Credentials($username, $password);
 
-        $this->usersDal->loginUser(new \Model\User($userCredentials));
+        $this->usersDAL->loginUser(new \Model\User($userCredentials));
     }
 
     public function attemptLoginAndRememberUser(string $username, string $password) : \Model\UserCookie{
@@ -34,7 +34,7 @@ class Authenticator {
         $this->attemptLogin($username, $password);
         
         $usercookie = new \Model\UserCookie($username);
-        $this->cookieDal->saveCookieInformation($usercookie);
+        $this->cookieDAL->saveCookieInformation($usercookie);
 
         return $usercookie;
     }
@@ -42,7 +42,7 @@ class Authenticator {
     public function attemptLoginWithCookies(string $cookieUsername, string $cookiePassword) : \Model\UserCookie {
         // TODO: Try to login a user with cookies
 
-       $updatedCookie = $this->cookieDal->validateAndUpdateCookie($cookieUsername, $cookiePassword);
+       $updatedCookie = $this->cookieDAL->validateAndUpdateCookie($cookieUsername, $cookiePassword);
 
        return $updatedCookie;
     }
