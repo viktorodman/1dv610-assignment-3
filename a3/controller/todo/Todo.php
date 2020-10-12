@@ -4,14 +4,26 @@ namespace Controller\Todo;
 
 
 class Todo {
-    private $startView;
+    private $todoView;
 
 
-    public function __construct(\View\Todo\Start $startView) {
-        $this->startView = $startView;
+    public function __construct(\View\Todo\TodoLayout $todoLayout) {
+        $this->todoView = $todoLayout;
     }
 
-    public function showSelectedTodo() {
+    public function doShowTodo() {
+        
+    }
+
+    public function doListTodos() {
+
+    }
+
+    public function doUpdateTodo() {
+
+    }
+
+    public function doDeleteTodo() {
         
     }
 }

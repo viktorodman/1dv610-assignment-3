@@ -5,7 +5,7 @@ namespace Controller;
 require_once('view/Layout.php');
 require_once('view/auth/Login.php');
 require_once('view/auth/Register.php');
-require_once('view/todo/Start.php');
+require_once('view/todo/TodoLayout.php');
 
 require_once('controller/auth/Login.php');
 require_once('controller/auth/Register.php');
@@ -22,7 +22,7 @@ class MainController {
 
         $this->loginView = new \View\Auth\Login($authenticator);
         $this->registerView = new \View\Auth\Register($authenticator);
-        $this->startView = new \View\Todo\Start();
+        $this->startView = new \View\Todo\TodoLayout();
     }
 
     public function run() {

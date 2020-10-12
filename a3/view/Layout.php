@@ -10,10 +10,10 @@ class Layout {
     private $linkText;
     private $navigationURL;
 
-    public function render(bool $isLoggedIn, $loginView, $registerView, $startView) {
+    public function render(bool $isLoggedIn, $loginView, $registerView, $todoLayout) {
 
         if ($isLoggedIn) {
-            $correctForm = $startView->getStartHTML();
+            $correctForm = $todoLayout->renderTodoLayout();
         }else if ($this->shouldShowRegisterForm()) {
             $correctForm = $registerView->getRegisterFormHTML();
         } else {
