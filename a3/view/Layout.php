@@ -30,12 +30,20 @@ class Layout {
         </head>
         <body>
             <div>
-            <header>
-                <span>Ey what you <span id="logo">TODOiN</span></span>
-            </header>
-            <nav>
-                '. $this->renderNavItems($isLoggedIn) .'
-            </nav>
+                <header>
+                    <div class="row">
+                        <div class="sideColumn">
+                        </div> 
+                        <div class="column">
+                        <span>Ey what you <span id="logo">TODOiN</span></span>
+                        </div>
+                        <div class="sideColumn">
+                        <nav>
+                            '. $this->renderNavItems($isLoggedIn) .'
+                        </nav>
+                        </div>
+                    </div>
+                </header>
             <div class="row">
                 '. $correctForm .'
             </div>

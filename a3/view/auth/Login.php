@@ -117,7 +117,7 @@ class Login {
 
     private function generateLoginFormHTML(string $message, string $remeberedUsername) : string {
         return '
-        <div class="column">
+        <div class="sideColumn">
         </div>
         <div class="column">
             <div id="loginArea">
@@ -139,7 +139,7 @@ class Login {
                 </form>
             </div>
         </div>
-        <div class="column">
+        <div class="sideColumn">
         </div>';
     }
 }

@@ -74,7 +74,7 @@ class Register {
 
     private function generateRegisterFormHTML(string $errorMessage, string $remeberedUsername) : string {
         return '
-        <div class="column">
+        <div class="sideColumn">
         </div>
         <div class="column">
             <div id="loginArea">
@@ -89,7 +89,7 @@ class Register {
             </form>
             </div>
         </div>
-        <div class="column">
+        <div class="sideColumn">
         </div>';
     }
 }
