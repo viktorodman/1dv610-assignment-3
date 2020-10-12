@@ -1,45 +1,71 @@
 :root {
-    --main-bg-color:  #DDDDDD;
-    --second-bg-color:  #DDDDDD;
-    --third-bg-color: #FFFFFF;
+    --main-bg-color:  #AAAAAA;
+    --second-bg-color:  #333333;
+    --third-bg-color: #AAAAAA;
     --form-bg-color: #293E6A;
     --main-form-text-color: #333333;
-    --main-text-color: #AAAAAA;
-    --second-text-color: #333333;
+    --main-text-color: #FFFFFF;
+    --second-text-color: #AAAAAA;
     --main-bg-gradient: linear-gradient(to right, #c1c161 0%, #c1c161 0%, #d4d4b1 100%);
-    
-   /*  --main-bg-color:  #5d5b6a;
-    --second-bg-color: #758184;
-    --third-bg-color: #cfb495;
-    --main-form-text-color: #f5cdaa; */
 }
 
 * {
     box-sizing: border-box;
-  }
+}
   
 
 body {
     background-color: var(--main-bg-color);
-    
-
     margin: 0;
     font-family: 'Oswald', sans-serif;
 }
 
-.header {
-    /* background-image: linear-gradient(to right, #868f96 0%, #596164 100%); */
+/*
+************************************************
+*                    LAYOUT
+************************************************
+*/
+
+header {
     background-color: var(--second-bg-color);
 
     text-align: center;
     padding: 5px;
     font-size: 60px;
-    color: var(--main-form-text-color);
+    color: var(--main-text-color);
     
 }
 
+nav {
+    overflow: hidden;
+    /* background-color: var(--third-bg-color); */
+    background-color: var(--third-bg-color);
+    border-top: 3px solid var(--main-text-color);
+}
+
+nav a {
+    float: right;
+    font-size: 30px;
+    display: block;
+    color: var(--main-form-text-color);
+    text-align: center;
+    padding: 14px 16px;
+    text-decoration: none;
+}
+
+footer {
+    position: fixed;
+    left: 0;
+    bottom: 0;
+    width: 100%;
+    background-color: var(--second-bg-color);
+    color: white;
+    text-align: center;
+    border-top: 2px solid var(--main-text-color);
+}
+
 #logo {
-    color: var(--main-text-color);
+    color: var(--second-text-color);
     text-shadow: #000 0px 0px 1px,   #000 0px 0px 1px,   #000 0px 0px 1px,
              #000 0px 0px 1px,   #000 0px 0px 1px,   #000 0px 0px 1px;
 }
@@ -48,41 +74,20 @@ body {
     float: left;
     width: 33.33%;
     padding: 15px;
-  }
+}
   
-  /* Clear floats after the columns */
-  .row:after {
+.row:after {
     content: "";
     display: table;
     clear: both;
-  }
-
-  .topnav {
-    overflow: hidden;
-    /* background-color: var(--third-bg-color); */
-    background-color: var(--third-bg-color);
-    border-top: 3px solid var(--main-text-color);
-  }
-  
-  /* Style the topnav links */
-  .topnav a {
-    float: right;
-    display: block;
-    color: var(--second-text-color);
-    text-align: center;
-    padding: 14px 16px;
-    text-decoration: none;
-  }
-
-/* START LOGIN AREA */
-
-#loginContainer {
-   /*  margin: 0 auto;
-    width: 50%; */
-    /* border: 2px solid green; */
 }
 
 
+/*
+************************************************
+*                    LOGIN
+************************************************
+*/
 
 #loginArea {
     margin: 0 auto;
@@ -95,16 +100,13 @@ body {
 box-shadow: -1px 5px 12px 1px rgba(0,0,0,0.75);
 }
 
+.authForm {
+    color: var(--main-text-color);
+}
 
 
-/* #loginForm {
-    display: block;
-} */
-
-
-
-#loginForm input {
-    font-size: 30px;
+.authForm input {
+    font-size: 25px;
     text-align: center;
     margin-bottom: 20px;
     border: none;
@@ -120,20 +122,20 @@ box-shadow: -1px 5px 12px 1px rgba(0,0,0,0.75);
    width: auto;
 }
 
-#loginForm #loginSubmit {
+.authForm input[type="submit"] {
     font-size: 30px;
     margin-bottom: 20px;
-    background-color: var(--main-text-color);
-    border: 3px solid var(--main-bg-color);
+    background-color: var(--second-bg-color);
+    border: 3px solid var(--main-text-color);
     border-radius: 25px;
     padding-left: 30px;
     padding-right: 30px;
     margin-top: 20px;
-    color: var(--main-bg-color);
+    color: var(--main-text-color);
     outline: none;
 }
 
-#loginForm input::placeholder {
+.authForm input::placeholder {
     color: var(--main-text-color);
     opacity: 1;
 }
@@ -147,4 +149,8 @@ box-shadow: -1px 5px 12px 1px rgba(0,0,0,0.75);
              #000 0px 0px 1px,   #000 0px 0px 1px,   #000 0px 0px 1px;
 }
 
-/* END LOGIN AREA */
+/*
+************************************************
+*                    Register
+************************************************
+*/

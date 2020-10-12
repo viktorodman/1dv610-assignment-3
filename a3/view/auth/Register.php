@@ -1,17 +1,17 @@
 <?php
 
-namespace View;
+namespace View\Auth;
 
 class Register {
     private static $registerURLID = 'register';
-    private static $messageID = 'RegisterView::Message';
-	private static $password = 'RegisterView::Password';
-	private static $passwordRepeat = 'RegisterView::PasswordRepeat';
-    private static $name = 'RegisterView::UserName';
-    private static $register = 'RegisterView::Register';
+    private static $messageID = 'ViewAuthRegister::Message';
+	private static $password = 'ViewAuthRegister::Password';
+	private static $passwordRepeat = 'ViewAuthRegister::PasswordRepeat';
+    private static $name = 'ViewAuthRegister::UserName';
+    private static $register = 'ViewAuthRegister::Register';
     private static $registeredUserMessage = 'Registered new user.';
-    private static $registerUserURL = 'Location: /a2?register';
-    private static $indexURL = 'Location: /a2';
+    private static $registerUserURL = 'Location: /a3?register';
+    private static $indexURL = 'Location: /a3';
 
     private $shouldBeReloaded = false;
     private $reloadURL;
@@ -21,7 +21,7 @@ class Register {
         $this->authenticator = $authenticator;
     }
 
-    public function response() {
+    public function getRegisterFormHTML() : string {
         $remeberedUsername = $this->authenticator->getRemeberedUsername();
         $errorMessage = $this->authenticator->getSessionMessage();
         
@@ -72,25 +72,24 @@ class Register {
         return $_POST[self::$passwordRepeat];
     }
 
-    private function generateRegisterFormHTML(string $errorMessage, string $remeberedUsername) : string{
+    private function generateRegisterFormHTML(string $errorMessage, string $remeberedUsername) : string {
         return '
-        <h2>Register new user</h2>
-        <form action="?' . self::$registerURLID .'" method="post" enctype="multipart/form-data">
-            <fieldset>
-            <legend>Register a new user - Write username and password</legend>
-                <p id="'. self::$messageID .'">' . $errorMessage . '</p>
-                <label for="'. self::$name .'" >Username :</label>
-                <input type="text" size="20" name="'. self::$name .'" id="'. self::$name .'" value="'. $remeberedUsername .'" />
-                <br/>
-                <label for="'. self::$password .'" >Password  :</label>
-                <input type="password" size="20" name="'. self::$password .'" id="'. self::$password .'" value="" />
-                <br/>
-                <label for="'. self::$passwordRepeat .'" >Repeat password  :</label>
-                <input type="password" size="20" name="'. self::$passwordRepeat .'" id="'. self::$passwordRepeat .'" value="" />
-                <br/>
-                <input id="submit" type="submit" name="'. self::$register .'"  value="Register" />
-                <br/>
-            </fieldset>
-        </form>';
+        <div class="column">
+        </div>
+        <div class="column">
+            <div id="loginArea">
+            <h2>Register new user</h2>
+            <form class="authForm" action="?' . self::$registerURLID .'" method="post" enctype="multipart/form-data">
+                    <p id="'. self::$messageID .'">'. $errorMessage .'</p>
+                    <input type="text" size="20" name="'. self::$name .'" id="'. self::$name .'" value="'. $remeberedUsername .'" placeholder="Username"/>
+                    <input type="password" size="20" name="'. self::$password .'" id="'. self::$password .'" value="" placeholder="Password"/>
+                    <input type="password" size="20" name="'. self::$passwordRepeat .'" id="'. self::$passwordRepeat .'" value="" placeholder="Repeat Password"/>
+                    <input id="submit" type="submit" name="'. self::$register .'"  value="Register" />
+                    <br/>
+            </form>
+            </div>
+        </div>
+        <div class="column">
+        </div>';
     }
 }

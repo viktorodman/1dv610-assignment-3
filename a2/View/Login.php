@@ -26,14 +26,7 @@ class Login {
 	}
 
 	
-	/**
-	 * Create HTTP response
-	 *
-	 * Should be called after a login attempt has been determined
-	 *
-	 * @return  void BUT writes to standard output and cookies!
-	 */
-	public function response() {
+	public function getLoginFormHTML() {
 		$remeberedUsername = $this->authenticator->getRemeberedUsername();
 		$message = $this->authenticator->getSessionMessage();
 		
@@ -158,7 +151,7 @@ class Login {
 	* @param $message, String output message
 	* @return  void, BUT writes to standard output!
 	*/
-	private function generateLoginFormHTML($message, $remeberedUsername) {
+	private function generateLoginFormHTML(string $message, string $remeberedUsername) {
 		return '
 			<form method="post" > 
 				<fieldset>

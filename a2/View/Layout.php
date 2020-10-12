@@ -19,7 +19,7 @@ class Layout {
     } else {
       $this->linkText = self::$registerText;
       $this->navigationURL = self::$registerURLID;
-      $correctForm = $v->response();
+      $correctForm = $v->getLoginFormHTML();
     }
 
     echo '<!DOCTYPE html>
