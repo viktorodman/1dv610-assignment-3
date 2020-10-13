@@ -31,9 +31,13 @@ header {
 
     text-align: center;
     padding: 0px;
-    font-size: 50px;
+    font-size: 30px;
     color: var(--main-text-color);
     
+}
+
+header .column, header .sideColumn {
+    padding: 1px;
 }
 
 nav {
@@ -43,7 +47,7 @@ nav {
 
 nav a {
     float: right;
-    font-size: 30px;
+    font-size: 20px;
     display: block;
     color: var(--main-text-color);
     text-align: center;
@@ -165,6 +169,19 @@ box-shadow: -1px 5px 12px 1px rgba(0,0,0,0.75);
 ************************************************
 */
 
+.todoNavBar {
+    margin: 0;
+    padding: 0;
+
+    width: 100%;
+
+    background-color: var(--main-text-color);
+}
+
+.todoNavBar a {
+    padding: 20px;
+}
+
 .todo {
     background-color: white;
     padding: 25px;
@@ -173,4 +190,20 @@ box-shadow: -1px 5px 12px 1px rgba(0,0,0,0.75);
 
 .todoTitle {
     font-size: 40px;
+}
+
+
+
+/* TODO LIST */
+
+.todoList {
+    background-color: #cbc7c7;
+    text-align: center;
+}
+
+.todoListItem {
+    background-color: var(--main-text-color);
+    margin: 15px;
+    padding: 15px;
+    text-align: left;
 }

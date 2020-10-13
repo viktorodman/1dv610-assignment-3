@@ -9,7 +9,7 @@ class TodoList {
         $this->todoList = $todoList;
     }
 
-    public function getTodoList() : array {
+    public function getTodos() : array {
         return $this->todoList;
     }
 }

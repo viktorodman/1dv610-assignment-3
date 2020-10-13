@@ -3,7 +3,10 @@
 namespace View\Todo;
 
 require_once('Todo.php');
+require_once('TodoList.php');
+require_once('TodoForm.php');
 require_once('model/Todo.php');
+require_once('model/TodoList.php');
 require_once('model/TodoInfo.php');
 
 class TodoLayout {
@@ -16,8 +19,9 @@ class TodoLayout {
 
     private $fakeList;
 
-    private static $createURL = 'create';
+    private static $createURLID = 'create';
     private static $showURL = 'show';
+    private static $showAllURLID = 'todos';
     private static $updateURL = 'update';
     private static $deleteURL = 'delete';
 
@@ -42,28 +46,49 @@ class TodoLayout {
             $this->fakeInfo2
         );
 
-        $this->fakeList = array($this->fakeTodo1, $this->fakeTodo2);
+        $this->fakeList = new \Model\TodoList(array($this->fakeTodo1, $this->fakeTodo2));
     }
 
     public function renderTodoLayout() : string {
-        /*TODO:^) 
-        * 1. KOLLA VILKEN TYP AV SIDA SOM SKA VISAS
-        *       Show 1
-        *       Show List
-        *       Create
-        * 2. Fixa en navbar för TODOS Med items create och show all
-        */
+        $pageContentHTML = '';
 
+        if ($this->userWantsToShowTodos()) {
+            $todoListView = new \View\Todo\TodoList();
+
+            $pageContentHTML = $todoListView->generateTodoListHTML($this->fakeList);
+        } else if($this->userWantToShowTodoForm()) {
+            $todoFormView = new \View\Todo\TodoForm();
+
+            $pageContentHTML = $todoFormView->generateTodoFormHTML();
+        } 
+
+        return $this->generateLayoutHTML($pageContentHTML);
+    }
+
+
+    private function generateLayoutHTML(string $pageContentHTML) : string {
         return 
         '
+            <div class="todoNavBar">
+                <a href="?'. self::$createURLID .'">Create New TODO</a>
+                <a href="?'. self::$showAllURLID .'">Show all todos</a>
+            </div>
             <div class="sideColumn">
             </div>
             <div class="column">
-
+                '. $pageContentHTML. '
             </div>
             <div class="sideColumn">
             </div>
         ';
+    }
+
+    public function userWantToShowTodoForm() : bool {
+        return isset($_GET[self::$createURLID]);
+    }
+
+    public function userWantsToShowTodos() : bool {
+        return isset($_GET[self::$showAllURLID]);
     }
 }
 

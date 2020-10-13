@@ -35,7 +35,7 @@ class Layout {
                         <div class="sideColumn">
                         </div> 
                         <div class="column">
-                        <span>Ey what you <span id="logo">TODOiN</span></span>
+                        <span><span id="logo">TODOiN</span></span>
                         </div>
                         <div class="sideColumn">
                         <nav>
