@@ -2,11 +2,13 @@
     --main-bg-color:  #AAAAAA;
     --second-bg-color:  #333333;
     --third-bg-color: #AAAAAA;
-    --form-bg-color: #293E6A;
-    --main-form-text-color: #333333;
     --main-text-color: #FFFFFF;
     --second-text-color: #AAAAAA;
     --main-bg-gradient: linear-gradient(to right, #c1c161 0%, #c1c161 0%, #d4d4b1 100%);
+
+    --main-todo-form-bg-color: #FFFFFF;
+    --main-todo-form-text-color: #333333;
+    --secondary-todo-form-text-color: #9b9b9b;
 }
 
 * {
@@ -207,3 +209,37 @@ box-shadow: -1px 5px 12px 1px rgba(0,0,0,0.75);
     padding: 15px;
     text-align: left;
 }
+
+.todoDescription {
+    width: 100%;
+    height: 150px;
+    resize: none;
+    border-radius: 5px;
+}
+
+.todoFormWrapper {
+    background-color: var(--main-todo-form-bg-color);
+    padding: 9px;
+    color: var(--main-todo-form-text-color);
+    border-radius: 10px;
+}
+
+.todoForm input{
+    margin-bottom: 10px;
+}
+
+.todoDescription:focus, .todoForm input:focus {
+    outline: none;
+    box-shadow: 0px 0px 2px #0066ff;
+}
+
+.todoForm input {
+    
+}
+
+.todoForm input[type="text"] , .todoDescription {
+    background-color: var(--main-todo-form-bg-color);
+    width: 100%;
+    border-radius: 4px;
+    border: 1px solid var(--second-text-color);
+ }

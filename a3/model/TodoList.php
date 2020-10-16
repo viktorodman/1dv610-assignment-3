@@ -12,4 +12,8 @@ class TodoList {
     public function getTodos() : array {
         return $this->todoList;
     }
+
+    public function isEmpty() : bool {
+        return count($this->todoList) < 1;
+    }
 }

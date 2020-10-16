@@ -3,61 +3,50 @@
 namespace Controller;
 
 require_once('view/Layout.php');
-require_once('view/auth/Login.php');
-require_once('view/auth/Register.php');
-require_once('view/todo/TodoLayout.php');
-
-require_once('controller/auth/Login.php');
-require_once('controller/auth/Register.php');
+require_once('controller/auth/AuthMain.php');
+require_once('controller/todo/TodoMain.php');
 
 class MainController {
     private $authenticator;
-    private $loginView;
-    private $registerView;
-    private $startView;
+    private $isLoggedIn;
+    private $layoutView;
+    private $settings;
 
     public function __construct(\Settings $settings, \Authenticator $authenticator) {
         $this->settings = $settings;
         $this->authenticator = $authenticator;
 
-        $this->loginView = new \View\Auth\Login($authenticator);
-        $this->registerView = new \View\Auth\Register($authenticator);
-        $this->startView = new \View\Todo\TodoLayout();
-    }
+        $this->authViews = new \View\Auth\AuthViews($authenticator);
+    }   
 
     public function run() {
         $this->loadState();
-
         $this->handleInput();
-
         $this->generateOutput();
     }
 
     private function loadState() {
        $this->isLoggedIn = $this->authenticator->isLoggedIn();
+       $this->layoutView = new \View\Layout($this->isLoggedIn);
     }
 
     private function handleInput() {
-        $loginController = new \Controller\Auth\Login($this->loginView, $this->authenticator);
+        if ($this->isLoggedIn) {
+            $todoMainController = new \Controller\Todo\TodoMain(
+                $this->layoutView,
+                $this->settings->getDBConnection(),
+                $this->authenticator->getSessionUser()
+            );
 
-        $registerController = new \Controller\Auth\Register($this->registerView, $this->authenticator);
+            $todoMainController->run();
+        } else {
+            $authMainController = new \Controller\Auth\AuthMain($this->authenticator, $this->layoutView);
 
-        $loginController->doLogin();
-        // NEED TO CHECK FOR LOGOUT
-        $registerController->doRegister();
+            $authMainController->run();
+        }
     }
 
     private function generateOutput() {
-        $layoutView = new \View\Layout();
-
-        $this->loginView->doHeaders();
-        $this->registerView->doHeaders();
-
-        $layoutView->render(
-            $this->isLoggedIn,
-            $this->loginView,
-            $this->registerView,
-            $this->startView
-        );
+        
     }
 }

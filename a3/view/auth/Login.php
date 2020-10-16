@@ -23,7 +23,6 @@ class Login {
         $this->authenticator = $authenticator;
     }
 
-
     public function getLoginFormHTML() : string {
         $remeberedUsername = $this->authenticator->getRemeberedUsername();
         $message = $this->authenticator->getSessionMessage();
