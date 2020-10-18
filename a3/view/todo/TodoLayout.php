@@ -15,12 +15,20 @@ class TodoLayout {
     private static $deleteURL = 'delete';
     
     private $todoViews;
+    private $sessionFlashMessageIndex;
+    private $sessionHandler;
 
-    public function __construct(\View\Todo\TodoViews $todoViews) {
+    public function __construct(\View\Todo\TodoViews $todoViews, 
+                                string $sessionFlashMessageIndex, 
+                                \SessionStorageHandler $sessionHandler) {
+
         $this->todoViews = $todoViews;
+        $this->sessionFlashMessageIndex = $sessionFlashMessageIndex;
+        $this->sessionHandler = $sessionHandler;
     }
 
     public function getTodoLayoutHTML() : string {
+        $message = $this->sessionHandler->getRememberedSessionVariable($this->sessionFlashMessageIndex);
         $pageContentHTML = '';
 
         if ($this->userWantsToShowTodos()) {
@@ -36,7 +44,7 @@ class TodoLayout {
             $pageContentHTML = $this->todoViews->getTodoView()->generateTodoHTML();
         }
 
-        return $this->generateLayoutHTML($pageContentHTML);
+        return $this->generateLayoutHTML($pageContentHTML, $message);
     }
   
     public function userWantToShowTodoForm() : bool {
@@ -47,13 +55,15 @@ class TodoLayout {
         return isset($_GET[self::$showAllURLID]);
     }
 
-    private function generateLayoutHTML(string $pageContentHTML) : string {
+    private function generateLayoutHTML(string $pageContentHTML, string $message) : string {
+
         return 
         '
             <div class="todoNavBar">
                 <a href="?'. self::$createURLID .'">Create New TODO</a>
                 <a href="?'. self::$showAllURLID .'">Show all todos</a>
             </div>
+            '. $this->getFlashMessageBarHTML($message) .'
             <div class="sideColumn">
             </div>
             <div class="column">
@@ -62,6 +72,18 @@ class TodoLayout {
             <div class="sideColumn">
             </div>
         ';
+    }
+
+    private function getFlashMessageBarHTML(string $message) : string {
+        if (strlen($message) < 1) {
+            return '';
+        } else {
+            return '
+                <div class="flashMessageBar">
+                    <span>'. $message .'</span>
+                </div>
+            ';
+        }
     }
 }
 

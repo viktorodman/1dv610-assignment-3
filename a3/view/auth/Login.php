@@ -21,11 +21,10 @@ class Login {
     private $messageSessionIndex;
 	private $shouldBeReloaded = false;
 
-    public function __construct(
-		\SessionStorageHandler $sessionHandler,
-		string $usernameSessionIndex,
-        string $messageSessionIndex
-	) {
+    public function __construct(\SessionStorageHandler $sessionHandler,
+								string $usernameSessionIndex,
+								string $messageSessionIndex) {
+			
 		$this->sessionHandler = $sessionHandler;
 		$this->usernameSessionIndex = $usernameSessionIndex;
         $this->messageSessionIndex = $messageSessionIndex;
@@ -73,7 +72,7 @@ class Login {
 			$this->shouldBeReloaded = true;
 		}
 
-		$this->sessionHandler->setSessionVariable($this->messageSessionIndex, self::$goodByeMessage);
+		$this->sessionHandler->setSessionVariable($this->messageSessionIndex, $errorMessage);
     }
     
     public function unsetCookies() {

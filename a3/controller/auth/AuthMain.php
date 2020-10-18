@@ -18,8 +18,9 @@ class AuthMain {
     private $authenticator;
     private $sessionHandler;
     
-    public function __construct(
-        \Authenticator $authenticator, \View\Layout $layoutView, \SessionStorageHandler $sessionHandler) {
+    public function __construct(\Authenticator $authenticator, 
+                                \View\Layout $layoutView, 
+                                \SessionStorageHandler $sessionHandler) {
 
         $this->loginView = new \View\Auth\Login(
             $sessionHandler, 

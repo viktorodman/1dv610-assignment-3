@@ -15,16 +15,15 @@ class Register {
 
     private $shouldBeReloaded = false;
     private $reloadURL;
+
     private $sessionHandler;
     private $usernameSessionIndex;
     private $messageSessionIndex;
  
-    public function __construct(
-        \SessionStorageHandler $sessionHandler,
-        string $usernameSessionIndex,
-        string $messageSessionIndex
-    ) 
-    {
+    public function __construct(\SessionStorageHandler $sessionHandler,
+                                string $usernameSessionIndex,
+                                string $messageSessionIndex) {
+            
         $this->sessionHandler = $sessionHandler;
         $this->usernameSessionIndex = $usernameSessionIndex;
         $this->messageSessionIndex = $messageSessionIndex;

@@ -2,6 +2,9 @@
 
 namespace Model\DAL;
 
+require_once(__DIR__ .  '/../LoginException.php');
+
+
 class UserCookieDAL {
     private static $tableName = "cookies";
     private static $fieldCookiePassword = "cookiepassword";
@@ -30,7 +33,7 @@ class UserCookieDAL {
 
             return $updatedCookie;
         } else {
-            throw new \Exception(self::$wrongInfoInCookiesMessage);
+            throw new \Model\LoginException(self::$wrongInfoInCookiesMessage);
         }
     }
 

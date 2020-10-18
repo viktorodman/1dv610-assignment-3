@@ -22,8 +22,10 @@ class Register {
                 );
 
                 $this->registerView->reloadPageAndRemeberRegisteredAccount();
+            } catch (\Model\RegistrationException $regError) {
+                $this->registerView->reloadPageAndShowErrorMessage($regError->getMessage());
             } catch (\Throwable $error) {
-                $this->registerView->reloadPageAndShowErrorMessage($error->getMessage());
+                // Write to errorLog
             }
         }
     }

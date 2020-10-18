@@ -3,6 +3,7 @@
 namespace Model;
 
 require_once('Credentials.php');
+require_once('RegistrationException.php');
 
 class RegisterCredentials {
     private static $passwordToShortMessage = 'Password has too few characters, at least 6 characters.';
@@ -14,18 +15,18 @@ class RegisterCredentials {
     public function __construct(string $username, string $password, string $repeatedPassword) {
 
         if(strlen($username) < 3 and strlen($password) < 6) {
-            throw new \Exception(self::$usernameToShortMessage . '<br>' . self::$passwordToShortMessage);
+            throw new \Model\RegistrationException(self::$usernameToShortMessage . '<br>' . self::$passwordToShortMessage);
         }
         if (strlen($username) < 3) {
-            throw new \Exception(self::$usernameToShortMessage);
+            throw new \Model\RegistrationException(self::$usernameToShortMessage);
         }
 
         if (strlen($password) < 6) {
-            throw new \Exception(self::$passwordToShortMessage);
+            throw new \Model\RegistrationException(self::$passwordToShortMessage);
         }
 
         if ($password !== $repeatedPassword) {
-            throw new \Exception(self::$passwordDoesNotMatchMessage);
+            throw new \Model\RegistrationException(self::$passwordDoesNotMatchMessage);
         }
 
         $this->credentials = new \Model\Credentials($username, $password);

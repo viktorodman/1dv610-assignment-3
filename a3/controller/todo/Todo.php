@@ -14,13 +14,11 @@ class Todo {
     private $userTodos;
 
 
-    public function __construct(
-        \View\Todo\TodoViews $todoViews,
-        \Model\DAL\TodoDAL $todoDAL, 
-        \Model\TodoList $userTodos, 
-        string $username
-    ) 
-    {
+    public function __construct(\View\Todo\TodoViews $todoViews,
+                                \Model\DAL\TodoDAL $todoDAL, 
+                                \Model\TodoList $userTodos, 
+                                string $username) {
+        
         $this->todoViews = $todoViews;
         $this->username = $username;
         $this->todoDAL = $todoDAL;

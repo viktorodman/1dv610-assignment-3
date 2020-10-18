@@ -24,12 +24,11 @@ class Login {
 	private $shouldBeReloaded = false;
 	
 
-	public function __construct(
-		\SessionStorageHandler $sessionHandler,
-		bool $isLoggedIn,
-		string $usernameSessionIndex,
-        string $messageSessionIndex
-	) {
+	public function __construct(\SessionStorageHandler $sessionHandler,
+								bool $isLoggedIn,
+								string $usernameSessionIndex,
+								string $messageSessionIndex) {
+			
 		$this->sessionHandler = $sessionHandler;
 		$this->isLoggedIn = $isLoggedIn;
 		$this->usernameSessionIndex = $usernameSessionIndex;

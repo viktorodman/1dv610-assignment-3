@@ -17,7 +17,6 @@ class Authenticator {
     private $usersDAL;
 
     public function __construct(\mysqli $dbConnection) {
-        // TODO: Add something
         $this->dbConnection = $dbConnection;
         $this->browserSessionStorage = new \Model\DAL\BrowserSessionStorage();
         $this->userSession = new \Model\DAL\UserSession();
@@ -25,13 +24,14 @@ class Authenticator {
         $this->usersDAL = new \Model\DAL\UsersDAL($dbConnection);
     }
 
-    // Public functions
-
+    
     public function isLoggedIn() : bool {
-        // TODO: Check if a user is logged in
         return $this->userSession->userSessionIsActive() and $this->browserSessionStorage->sessionBrowserIsUpToDate();
     }
 
+    /**
+     * @throws LoginException
+     */
     public function attemptLogin(string $username, string $password, bool $userWantsToBeRemembered) {
         $userCredentials = new \Model\Credentials($username, $password);
         $this->usersDAL->loginUser(new \Model\User($userCredentials));
@@ -44,6 +44,9 @@ class Authenticator {
         $this->loginUser($username);
     }
 
+    /**
+     * @throws LoginException
+     */
     public function attemptLoginWithCookies($cookieUsername, $cookiePassword) {
         $this->cookieDAL->validateAndUpdateCookie($cookieUsername, $cookiePassword);
         
@@ -51,7 +54,6 @@ class Authenticator {
     }
 
     public function attemptLogout() {
-        // TODO: Try to logout a user
         $this->userSession->removeUserSession();
         $this->browserSessionStorage->unsetSessionBrowser();
     }
@@ -64,6 +66,9 @@ class Authenticator {
         return $this->cookieDAL->getCookieDuration($cookieUsername);
     }
 
+    /**
+     * @throws RegisterException
+     */
     public function attemptRegisterUser(string $username, string $password, string $passwordRepeat) {
         $registerCredentials = new \Model\RegisterCredentials($username, $password, $passwordRepeat);
         $user = new \Model\User($registerCredentials->getUserCredentials());

@@ -19,11 +19,10 @@ class Register {
     private $usernameSessionIndex;
     private $messageSessionIndex;
  
-    public function __construct(
-        \SessionStorageHandler $sessionHandler,
-        string $usernameSessionIndex,
-        string $messageSessionIndex
-    ) {
+    public function __construct(\SessionStorageHandler $sessionHandler,
+                                string $usernameSessionIndex,
+                                string $messageSessionIndex) {
+            
         $this->sessionHandler = $sessionHandler;
         $this->usernameSessionIndex = $usernameSessionIndex;
         $this->messageSessionIndex = $messageSessionIndex;

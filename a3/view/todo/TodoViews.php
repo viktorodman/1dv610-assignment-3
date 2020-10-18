@@ -12,9 +12,12 @@ class TodoViews {
     private $todoList;
     private $userTodos;
 
-    public function __construct(\Model\TodoList $userTodos, \SessionStorageHandler $sessionStorageHandler) {
-        $this->todoView = new \View\Todo\Todo();
-        $this->todoForm = new \View\Todo\TodoForm($sessionStorageHandler);
+    public function __construct(\Model\TodoList $userTodos, 
+                                \SessionStorageHandler $sessionStorageHandler,
+                                string $sessionFlashMessageIndex) {
+            
+        $this->todoView = new \View\Todo\Todo($sessionStorageHandler, $sessionFlashMessageIndex);
+        $this->todoForm = new \View\Todo\TodoForm($sessionStorageHandler, $sessionFlashMessageIndex);
         $this->todoList = new \View\Todo\TodoList($userTodos);
     }
 

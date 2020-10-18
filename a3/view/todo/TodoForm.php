@@ -5,6 +5,7 @@ namespace View\Todo;
 
 class TodoForm {
     private static $messageSessionIndex = "View\\Todo\\TodoForm::messageSessionIndex";
+    private static $todoCreateSuccessMessage = "Todo was created!";
     private static $description = 'TodoForm::Description';
     private static $title = 'TodoForm::Title';
     private static $date = 'TodoForm::Date';
@@ -13,11 +14,13 @@ class TodoForm {
     private static $createURL = 'a3?create';
 
     private $sessionHandler;
+    private $sessionFlashMessageIndex;
     private $shouldBeReloaded = false;
     private $reloadPageURL;
 
-    public function __construct(\SessionStorageHandler $sessionHandler) {
+    public function __construct(\SessionStorageHandler $sessionHandler, string $sessionFlashMessageIndex) {
         $this->sessionHandler = $sessionHandler;
+        $this->sessionFlashMessageIndex = $sessionFlashMessageIndex;
     }
 
     public function generateTodoFormHTML() : string {
@@ -57,6 +60,7 @@ class TodoForm {
     }
 
     public function redirectAndShowCreateMessage() {
+        $this->sessionHandler->setSessionVariable($this->sessionFlashMessageIndex, self::$todoCreateSuccessMessage);
         $this->reloadPageURL = self::$todosURL;
         $this->shouldBeReloaded = true;
     }

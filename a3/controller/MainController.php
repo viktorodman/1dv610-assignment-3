@@ -13,11 +13,10 @@ class MainController {
     private $settings;
     private $sessionHandler;
 
-    public function __construct(
-        \Settings $settings, 
-        \Authenticator $authenticator,
-        \SessionStorageHandler $sessionHandler
-    ) {
+    public function __construct(\Settings $settings, 
+                                \Authenticator $authenticator,
+                                \SessionStorageHandler $sessionHandler) {
+        
         $this->settings = $settings;
         $this->authenticator = $authenticator;
         $this->sessionHandler = $sessionHandler;

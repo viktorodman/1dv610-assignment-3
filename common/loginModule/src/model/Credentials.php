@@ -2,6 +2,8 @@
 
 namespace Model;
 
+require_once('LoginException.php');
+
 require_once('Username.php');
 require_once('Password.php');
 
@@ -13,11 +15,11 @@ class Credentials {
 
     public function __construct(string $username, string $password) {
         if (empty($username)) {
-            throw new \Exception(self::$errorMessageNoUsername);
+            throw new \Model\LoginException(self::$errorMessageNoUsername);
         }
         
         if (empty($password)) {
-            throw new \Exception(self::$errorMessageNoPassword);
+            throw new \Model\LoginException(self::$errorMessageNoPassword);
 		}
 
         $this->username = new \Model\Username($username);

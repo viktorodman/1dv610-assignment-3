@@ -2,6 +2,10 @@
 
 namespace Model\DAL;
 
+
+require_once(__DIR__ .  '/../LoginException.php');
+require_once(__DIR__ .  '/../RegistrationException.php');
+
 class UsersDAL {
     private static $tableName = "Users";
     private static $rowUsername = "username";
@@ -22,7 +26,7 @@ class UsersDAL {
         if($this->isUserInDB($username) === false) {
             $this->addUserToDatabase($username, $password);
         } else {
-            throw new \Exception(self::$userAlreadyExistsMessage);
+            throw new \Model\RegistrationException(self::$userAlreadyExistsMessage);
         }
     }
 
@@ -32,10 +36,10 @@ class UsersDAL {
 
         if ($this->isUserInDB($username)) {
             if (!$this->passwordIsCorrect($username, $password)) {
-                throw new \Exception(self::$wrongNameOrPasswordMessage);
+                throw new \Model\LoginException(self::$wrongNameOrPasswordMessage);
             } 
         } else {
-            throw new \Exception(self::$wrongNameOrPasswordMessage);
+            throw new \Model\LoginException(self::$wrongNameOrPasswordMessage);
         }
     }
 

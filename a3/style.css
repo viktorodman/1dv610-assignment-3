@@ -179,6 +179,17 @@ footer {
 *                    TODO
 ************************************************
 */
+.flashMessageBar {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    background-color: var(--success-color);
+    color: var(--secondary-color);
+    font-weight: 200;
+    font-size: 20px;
+    letter-spacing: 2px;
+    text-align: center;
+}
 
 .todoNavBar {
     margin: 0;
