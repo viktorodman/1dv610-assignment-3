@@ -4,9 +4,6 @@ namespace View;
 
 
 class Login {
-	private static $rememberedUserSessionIndex = "rememberedUserSessionIndex";
-    private static $messageSessionIndex = "messageSessionIndex";
-
 	private static $login = 'LoginView::Login';
 	private static $logout = 'LoginView::Logout';
 	private static $name = 'LoginView::UserName';
@@ -20,20 +17,28 @@ class Login {
 	private static $loginCookieMessage = "Welcome back with cookie";
 	private static $loginRemeberMessage = "Welcome and you will be remembered";
 
-
 	private $sessionHandler;
 	private $isLoggedIn;
+	private $usernameSessionIndex;
+    private $messageSessionIndex;
 	private $shouldBeReloaded = false;
 	
 
-	public function __construct(\SessionStorageHandler $sessionHandler, bool $isLoggedIn) {
+	public function __construct(
+		\SessionStorageHandler $sessionHandler,
+		bool $isLoggedIn,
+		string $usernameSessionIndex,
+        string $messageSessionIndex
+	) {
 		$this->sessionHandler = $sessionHandler;
 		$this->isLoggedIn = $isLoggedIn;
+		$this->usernameSessionIndex = $usernameSessionIndex;
+        $this->messageSessionIndex = $messageSessionIndex;
 	}
 
 	public function getLoginFormHTML() {
-		$remeberedUsername = $this->sessionHandler->getRememberedSessionVariable(self::$rememberedUserSessionIndex);
-		$message = $this->sessionHandler->getRememberedSessionVariable(self::$messageSessionIndex);
+		$remeberedUsername = $this->sessionHandler->getRememberedSessionVariable($this->usernameSessionIndex);
+		$message = $this->sessionHandler->getRememberedSessionVariable($this->messageSessionIndex);
 
 		
 		if ($this->isLoggedIn) {
@@ -63,8 +68,8 @@ class Login {
 			$username = $this->getRequestUsername();
 		}
 
-		$this->sessionHandler->setSessionVariable(self::$rememberedUserSessionIndex, $username);
-		$this->sessionHandler->setSessionVariable(self::$messageSessionIndex, $message);
+		$this->sessionHandler->setSessionVariable($this->usernameSessionIndex, $username);
+		$this->sessionHandler->setSessionVariable($this->messageSessionIndex, $message);
 
 		$this->shouldBeReloaded = true;
 	}
@@ -75,7 +80,7 @@ class Login {
 			$this->unsetCookies();
 		}
 
-		$this->sessionHandler->setSessionVariable(self::$messageSessionIndex, self::$goodByeMessage);
+		$this->sessionHandler->setSessionVariable($this->messageSessionIndex, self::$goodByeMessage);
 		
 		$this->shouldBeReloaded = true;
 	}
@@ -90,8 +95,8 @@ class Login {
 			$this->shouldBeReloaded = true;
 		}
 
-		$this->sessionHandler->setSessionVariable(self::$rememberedUserSessionIndex, $username);
-		$this->sessionHandler->setSessionVariable(self::$messageSessionIndex, $errorMessage);
+		$this->sessionHandler->setSessionVariable($this->usernameSessionIndex, $username);
+		$this->sessionHandler->setSessionVariable($this->messageSessionIndex, $errorMessage);
 	}
 
 	public function unsetCookies() {

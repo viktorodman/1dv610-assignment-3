@@ -11,10 +11,16 @@ class MainController {
     private $isLoggedIn;
     private $layoutView;
     private $settings;
+    private $sessionHandler;
 
-    public function __construct(\Settings $settings, \Authenticator $authenticator) {
+    public function __construct(
+        \Settings $settings, 
+        \Authenticator $authenticator,
+        \SessionStorageHandler $sessionHandler
+    ) {
         $this->settings = $settings;
         $this->authenticator = $authenticator;
+        $this->sessionHandler = $sessionHandler;
     }   
 
     public function run() {
@@ -33,12 +39,17 @@ class MainController {
             $todoMainController = new \Controller\Todo\TodoMain(
                 $this->layoutView,
                 $this->settings->getDBConnection(),
+                $this->sessionHandler,
                 $this->authenticator->getUser()
             );
 
             $todoMainController->run();
         } else {
-            $authMainController = new \Controller\Auth\AuthMain($this->authenticator, $this->layoutView);
+            $authMainController = new \Controller\Auth\AuthMain(
+                $this->authenticator, 
+                $this->layoutView,
+                $this->sessionHandler
+            );
 
             $authMainController->run();
         }

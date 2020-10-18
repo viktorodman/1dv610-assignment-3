@@ -2,7 +2,6 @@
 
 namespace View\Todo;
 
-require_once('model/DAL/SessionDAL.php');
 
 class TodoForm {
     private static $messageSessionIndex = "View\\Todo\\TodoForm::messageSessionIndex";
@@ -13,16 +12,16 @@ class TodoForm {
     private static $todosURL = 'a3?todos';
     private static $createURL = 'a3?create';
 
-    private $sessionDAL;
+    private $sessionHandler;
     private $shouldBeReloaded = false;
     private $reloadPageURL;
 
-    public function __construct() {
-        $this->sessionDAL = new \Model\DAL\SessionDAL();
+    public function __construct(\SessionStorageHandler $sessionHandler) {
+        $this->sessionHandler = $sessionHandler;
     }
 
     public function generateTodoFormHTML() : string {
-        $errorMessage = $this->sessionDAL->getRememberedSessionVariable(self::$messageSessionIndex);
+        $errorMessage = $this->sessionHandler->getRememberedSessionVariable(self::$messageSessionIndex);
 
         return '
             <div class="todoFromWrapperTitle">
@@ -66,15 +65,17 @@ class TodoForm {
         $this->reloadPageURL = self::$createURL;
         $this->shouldBeReloaded = true;
 
-        $this->sessionDAL->setIndexValue(self::$messageSessionIndex, $errorMessage);
+        $this->sessionHandler->setSessionVariable(self::$messageSessionIndex, $errorMessage);
     }
 
     public function getRequestTitle() : string {
         return $_POST[self::$title];
     }
+
     public function getRequestDescription() : string {
         return $_POST[self::$description];
     }
+
     public function getRequestDate() : string {
         return $_POST[self::$date];
     }

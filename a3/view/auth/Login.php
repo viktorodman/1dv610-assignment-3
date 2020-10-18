@@ -16,16 +16,24 @@ class Login {
 	private static $loginCookieMessage = "Welcome back with cookie";
 	private static $loginRemeberMessage = "Welcome and you will be remembered";
 
-	private $authenticator;
+	private $sessionHandler;
+	private $usernameSessionIndex;
+    private $messageSessionIndex;
 	private $shouldBeReloaded = false;
 
-    public function __construct(\Authenticator $authenticator) {
-        $this->authenticator = $authenticator;
+    public function __construct(
+		\SessionStorageHandler $sessionHandler,
+		string $usernameSessionIndex,
+        string $messageSessionIndex
+	) {
+		$this->sessionHandler = $sessionHandler;
+		$this->usernameSessionIndex = $usernameSessionIndex;
+        $this->messageSessionIndex = $messageSessionIndex;
     }
 
     public function getLoginFormHTML() : string {
-        $remeberedUsername = $this->authenticator->getRemeberedUsername();
-        $message = $this->authenticator->getSessionMessage();
+        $remeberedUsername = $this->sessionHandler->getRememberedSessionVariable($this->usernameSessionIndex);
+		$message = $this->sessionHandler->getRememberedSessionVariable($this->messageSessionIndex);
         
         return $this->generateLoginFormHTML($message, $remeberedUsername);
     }
@@ -48,7 +56,8 @@ class Login {
 			$username = $this->getRequestUsername();
 		}
 
-		$this->authenticator->remeberSuccessfulLogin($username, $message);
+		$this->sessionHandler->setSessionVariable($this->usernameSessionIndex, $username);
+		$this->sessionHandler->setSessionVariable($this->messageSessionIndex, $message);
 
 		$this->shouldBeReloaded = true;
     }
@@ -64,7 +73,7 @@ class Login {
 			$this->shouldBeReloaded = true;
 		}
 
-		$this->authenticator->remeberFailedLogin($username, $errorMessage);
+		$this->sessionHandler->setSessionVariable($this->messageSessionIndex, self::$goodByeMessage);
     }
     
     public function unsetCookies() {
@@ -72,9 +81,9 @@ class Login {
         setcookie(self::$cookiePassword, '', time()-70000000);
 	}
 	
-	public function setUserCookies(\Model\UserCookie $userCookie) {
-        setcookie(self::$cookieName, $userCookie->getCookieUsername(), $userCookie->getCookieDuration());
-        setcookie(self::$cookiePassword, $userCookie->getCookiePassword(), $userCookie->getCookieDuration());
+	public function setUserCookies(string $cookieUsername, string $cookiePassword, int $cookieDuration) {
+        setcookie(self::$cookieName, $cookieUsername, $cookieDuration);
+        setcookie(self::$cookiePassword, $cookiePassword, $cookieDuration);
 	}
 
 	public function userWantsToLogin () : bool {

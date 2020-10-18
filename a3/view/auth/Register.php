@@ -15,17 +15,25 @@ class Register {
 
     private $shouldBeReloaded = false;
     private $reloadURL;
-    private $authenticator;
+    private $sessionHandler;
+    private $usernameSessionIndex;
+    private $messageSessionIndex;
  
-    public function __construct(\Authenticator $authenticator) {
-        $this->authenticator = $authenticator;
+    public function __construct(
+        \SessionStorageHandler $sessionHandler,
+        string $usernameSessionIndex,
+        string $messageSessionIndex
+    ) {
+        $this->sessionHandler = $sessionHandler;
+        $this->usernameSessionIndex = $usernameSessionIndex;
+        $this->messageSessionIndex = $messageSessionIndex;
     }
 
     public function getRegisterFormHTML() : string {
-        $remeberedUsername = $this->authenticator->getRemeberedUsername();
-        $errorMessage = $this->authenticator->getSessionMessage();
+        $remeberedUsername = $this->sessionHandler->getRememberedSessionVariable($this->usernameSessionIndex);
+		$message = $this->sessionHandler->getRememberedSessionVariable($this->messageSessionIndex);
         
-        return $this->generateRegisterFormHTML($errorMessage, $remeberedUsername);
+        return $this->generateRegisterFormHTML($message, $remeberedUsername);
     }
 
     public function doHeaders() {
@@ -35,8 +43,13 @@ class Register {
     }
     
     public function reloadPageAndRemeberRegisteredAccount() {
-        $this->authenticator->remeberSuccessfullRegistration(
-            $this->getRequestUsername(),
+        $this->sessionHandler->setSessionVariable(
+            $this->usernameSessionIndex,
+            $this->getRequestUsername()
+        );
+
+        $this->sessionHandler->setSessionVariable(
+            $this->messageSessionIndex,
             self::$registeredUserMessage
         );
 
@@ -46,8 +59,13 @@ class Register {
 
 
     public function reloadPageAndShowErrorMessage(string $errorMessage) {
-        $this->authenticator->remeberFailedRegistration(
-            $this->getRequestUsername(),
+        $this->sessionHandler->setSessionVariable(
+            $this->usernameSessionIndex,
+            $this->getRequestUsername()
+        );
+
+        $this->sessionHandler->setSessionVariable(
+            $this->messageSessionIndex,
             $errorMessage
         );
 		

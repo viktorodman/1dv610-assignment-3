@@ -9,16 +9,33 @@ require_once('controller/auth/Login.php');
 require_once('controller/auth/Register.php');
 
 class AuthMain {
+    private static $rememberedUserSessionIndex = "rememberedUserSessionIndex";
+    private static $messageSessionIndex = "messageSessionIndex";
+
     private $loginView;
     private $registerView;
     private $layoutView;
     private $authenticator;
+    private $sessionHandler;
     
-    public function __construct(\Authenticator $authenticator, \View\Layout $layoutView) {
-        $this->loginView = new \View\Auth\Login($authenticator);
-        $this->registerView = new \View\Auth\Register($authenticator);
+    public function __construct(
+        \Authenticator $authenticator, \View\Layout $layoutView, \SessionStorageHandler $sessionHandler) {
+
+        $this->loginView = new \View\Auth\Login(
+            $sessionHandler, 
+            self::$rememberedUserSessionIndex, 
+            self::$messageSessionIndex
+        );
+
+        $this->registerView = new \View\Auth\Register(
+            $sessionHandler,
+            self::$rememberedUserSessionIndex, 
+            self::$messageSessionIndex
+        );
+
         $this->layoutView = $layoutView;
         $this->authenticator = $authenticator;
+        $this->sessionHandler = $sessionHandler;
     }
 
     public function run () {

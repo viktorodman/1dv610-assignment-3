@@ -3,9 +3,6 @@
 namespace View;
 
 class Register {
-    private static $rememberedUserSessionIndex = "rememberedUserSessionIndex";
-    private static $messageSessionIndex = "messageSessionIndex";
-    
     private static $registerURLID = 'register';
     private static $messageID = 'RegisterView::Message';
 	private static $password = 'RegisterView::Password';
@@ -19,14 +16,23 @@ class Register {
     private $shouldBeReloaded = false;
     private $reloadURL;
     private $sessionHandler;
+    private $usernameSessionIndex;
+    private $messageSessionIndex;
  
-    public function __construct(\SessionStorageHandler $sessionHandler) {
+    public function __construct(
+        \SessionStorageHandler $sessionHandler,
+        string $usernameSessionIndex,
+        string $messageSessionIndex
+    ) 
+    {
         $this->sessionHandler = $sessionHandler;
+        $this->usernameSessionIndex = $usernameSessionIndex;
+        $this->messageSessionIndex = $messageSessionIndex;
     }
 
     public function response() {
-        $remeberedUsername = $this->sessionHandler->getRememberedSessionVariable(self::$rememberedUserSessionIndex);
-		$message = $this->sessionHandler->getRememberedSessionVariable(self::$messageSessionIndex);
+        $remeberedUsername = $this->sessionHandler->getRememberedSessionVariable($this->usernameSessionIndex);
+		$message = $this->sessionHandler->getRememberedSessionVariable($this->messageSessionIndex);
 
         
         return $this->generateRegisterFormHTML($message, $remeberedUsername);
@@ -40,12 +46,12 @@ class Register {
     
     public function reloadPageAndRemeberRegisteredAccount() {
         $this->sessionHandler->setSessionVariable(
-            self::$rememberedUserSessionIndex,
+            $this->usernameSessionIndex,
             $this->getRequestUsername()
         );
 
         $this->sessionHandler->setSessionVariable(
-            self::$messageSessionIndex,
+            $this->messageSessionIndex,
             self::$registeredUserMessage
         );
 
@@ -56,12 +62,12 @@ class Register {
 
     public function reloadPageAndShowErrorMessage(string $errorMessage) {
         $this->sessionHandler->setSessionVariable(
-            self::$rememberedUserSessionIndex,
+            $this->usernameSessionIndex,
             $this->getRequestUsername()
         );
 
         $this->sessionHandler->setSessionVariable(
-            self::$messageSessionIndex,
+            $this->messageSessionIndex,
             $errorMessage
         );
 		

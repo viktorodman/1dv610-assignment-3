@@ -10,6 +10,9 @@ require_once('View/Register.php');
 require_once('View/DateTime.php');
 
 class LoginApp {
+    private static $rememberedUserSessionIndex = "rememberedUserSessionIndex";
+    private static $messageSessionIndex = "messageSessionIndex";
+
     private $authenticator;
     private $isLoggedIn;
     private $sessionHandler;
@@ -20,8 +23,18 @@ class LoginApp {
         $this->authenticator = $authenticator;
         $this->sessionHandler = $sessionHandler;
 
-        $this->loginView = new \View\Login($sessionHandler, $authenticator->isLoggedIn());
-        $this->registerView = new \View\Register($sessionHandler);
+        $this->loginView = new \View\Login(
+            $sessionHandler, 
+            $authenticator->isLoggedIn(),
+            self::$rememberedUserSessionIndex,
+            self::$messageSessionIndex
+        );
+        
+        $this->registerView = new \View\Register(
+            $sessionHandler,
+            self::$rememberedUserSessionIndex,
+            self::$messageSessionIndex
+        );
     }
 
     public function run() {

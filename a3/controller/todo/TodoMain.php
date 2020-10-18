@@ -17,11 +17,18 @@ class TodoMain {
     private $userTodos;
     private $username;
     private $layoutView;
+    private $sessionHandler;
 
-    public function __construct(\View\Layout $layoutView, \mysqli $dbConnection, string $username) {
+    public function __construct(
+        \View\Layout $layoutView, 
+        \mysqli $dbConnection,
+        \SessionStorageHandler $sessionHandler,
+        string $username
+    ) {
         $this->layoutView = $layoutView;
         $this->todoDAL = new \Model\DAL\TodoDAL($dbConnection);
         $this->username = $username;
+        $this->sessionHandler = $sessionHandler;
     }
 
     public function run () {
@@ -33,12 +40,17 @@ class TodoMain {
     private function loadState() {
         $this->userTodos = $this->todoDAL->getUsersTodosFromDatabase($this->username);
 
-        $this->todoViews = new \View\Todo\TodoViews($this->userTodos);
+        $this->todoViews = new \View\Todo\TodoViews($this->userTodos, $this->sessionHandler);
         $this->todoLayoutView = new \View\Todo\TodoLayout($this->todoViews);
     }
 
     private function handleInput() {
-        $todoController = new \Controller\Todo\Todo($this->todoViews, $this->todoDAL, $this->userTodos, $this->username);
+        $todoController = new \Controller\Todo\Todo(
+            $this->todoViews,
+            $this->todoDAL, 
+            $this->userTodos, 
+            $this->username
+        );
         $todoController->doTodos();
     }
 
