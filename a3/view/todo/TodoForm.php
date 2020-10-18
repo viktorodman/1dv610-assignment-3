@@ -18,15 +18,18 @@ class TodoForm {
     private $reloadPageURL;
 
     public function __construct() {
-        $this->sessionDAL = new \Model\DAL\SessionDAL(self::$messageSessionIndex);
+        $this->sessionDAL = new \Model\DAL\SessionDAL();
     }
 
     public function generateTodoFormHTML() : string {
+        $errorMessage = $this->sessionDAL->getRememberedSessionVariable(self::$messageSessionIndex);
+
         return '
             <div class="todoFromWrapperTitle">
             <span>Create a TODO</span>
             </div>
             <div class="todoFormWrapper">
+                <span class="errorMessage">'. $errorMessage .'</span>
                 <form class="todoForm" id="loginForm" method="post" >
                     <label for="' . self::$title . '">Title</label>
                     <br>
@@ -63,7 +66,7 @@ class TodoForm {
         $this->reloadPageURL = self::$createURL;
         $this->shouldBeReloaded = true;
 
-        $this->sessionDAL->setIndexValue($errorMessage);
+        $this->sessionDAL->setIndexValue(self::$messageSessionIndex, $errorMessage);
     }
 
     public function getRequestTitle() : string {

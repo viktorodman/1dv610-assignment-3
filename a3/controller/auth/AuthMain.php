@@ -12,11 +12,13 @@ class AuthMain {
     private $loginView;
     private $registerView;
     private $layoutView;
+    private $authenticator;
     
     public function __construct(\Authenticator $authenticator, \View\Layout $layoutView) {
         $this->loginView = new \View\Auth\Login($authenticator);
         $this->registerView = new \View\Auth\Register($authenticator);
         $this->layoutView = $layoutView;
+        $this->authenticator = $authenticator;
     }
 
     public function run () {
@@ -38,6 +40,8 @@ class AuthMain {
     }
 
     private function generateOutput() {
+        $this->loginView->doHeaders();
+        $this->registerView->doHeaders();
         $this->layoutView->renderLoggedOutLayout($this->loginView, $this->registerView);
     }   
 }

@@ -14,7 +14,11 @@ class TodoInfo {
     public function __construct(string $title, string $description, string $deadLine, string $createDate) {
         $this->title = new TodoTitle($title);
         $this->description = new TodoDescription($description);
-        $this->deadLine = $deadLine;
+        if (empty($deadLine)) {
+            $this->deadLine = "No todo date";
+        } else {
+            $this->deadLine = $deadLine;
+        }
         $this->createDate = $createDate;
     }
 

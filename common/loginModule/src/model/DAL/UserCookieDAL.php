@@ -4,7 +4,9 @@ namespace Model\DAL;
 
 class UserCookieDAL {
     private static $tableName = "cookies";
-    private static $rowCookiePassword = "cookiepassword";
+    private static $fieldCookiePassword = "cookiepassword";
+    private static $fieldCookieUser = "cookieuser";
+    private static $fieldExpireDate = "expiredate";
     private static $wrongInfoInCookiesMessage = "Wrong information in cookies";
     private $dbConnection;
 
@@ -38,7 +40,9 @@ class UserCookieDAL {
     }
 
     public function updateAndSaveCookieInfo(\Model\UserCookie $userCookie) {
-        $query = "UPDATE " . self::$tableName . " SET cookiepassword=?, expiredate=? WHERE cookieuser=?";
+        $query = "UPDATE " . self::$tableName . 
+                 " SET ". self::$fieldCookiePassword ."=?, ". self::$fieldExpireDate ."=?" . 
+                 " WHERE ". self::$fieldCookieUser ."=?";
 
         if ($stmt = $this->dbConnection->prepare($query)) {
             $stmt->bind_param(
@@ -55,9 +59,53 @@ class UserCookieDAL {
         } 
     }
 
+    public function getCookiePassword(string $cookieUsername) : string {
+        $query = "SELECT ". self::$fieldCookiePassword .
+                 " FROM " . self::$tableName . 
+                 " WHERE ". self::$fieldCookieUser ."=?";
+
+        if($stmt = $this->dbConnection->prepare($query)) {
+            $stmt->bind_param("s", $cookieUsername);
+
+            $stmt->execute();
+
+            $stmt->bind_result($savedPassword);
+
+            $stmt->fetch();
+
+            $stmt->close();
+
+            return $savedPassword;
+        }
+    }
+
+    public function getCookieDuration(string $cookieUsername) : int {
+        $query = "SELECT ". self::$fieldExpireDate .
+                 " FROM " . self::$tableName . 
+                 " WHERE ". self::$fieldCookieUser ."=?";
+
+        if($stmt = $this->dbConnection->prepare($query)) {
+            $stmt->bind_param("s", $cookieUsername);
+
+            $stmt->execute();
+
+            $stmt->bind_result($cookieDuration);
+
+            $stmt->fetch();
+
+            $stmt->close();
+
+            return $cookieDuration;
+        }
+    }
+
     private function saveCookie(\Model\UserCookie $userCookie) {
 
-        $query = "INSERT INTO " . self::$tableName . " (cookieuser, cookiepassword, expiredate) VALUES (?,?,?)";
+        $query = "INSERT INTO " . self::$tableName . 
+                 " (". self::$fieldCookieUser .
+                 ", ". self::$fieldCookiePassword .
+                 ", ". self::$fieldExpireDate .
+                 ") VALUES (?,?,?)";
 
         if ($stmt = $this->dbConnection->prepare($query)) {
             $stmt->bind_param(
@@ -75,7 +123,8 @@ class UserCookieDAL {
 
     private function userCookieExists(string $cookieUsername) : bool {
 
-        $query = "SELECT * FROM " . self::$tableName . " WHERE cookieuser=?";
+        $query = "SELECT * FROM " . self::$tableName . 
+                 " WHERE ". self::$fieldCookieUser ."=?";
         $userExists = 0;
         
         if($stmt = $this->dbConnection->prepare($query)) {
@@ -91,7 +140,9 @@ class UserCookieDAL {
     }
 
     private function passwordIsValid(string $cookieUsername, string $cookiePassword) : bool {
-        $query = "SELECT ". self::$rowCookiePassword ." FROM " . self::$tableName . " WHERE cookieuser=?";
+        $query = "SELECT ". self::$fieldCookiePassword .
+                 " FROM " . self::$tableName . 
+                 " WHERE ". self::$fieldCookieUser ."=?";
         
         if($stmt = $this->dbConnection->prepare($query)) {
             $stmt->bind_param("s", $cookieUsername);
@@ -115,7 +166,9 @@ class UserCookieDAL {
     private function isCookieExpired(string $cookieUsername) : bool {
 
 
-        $query = "SELECT expiredate FROM " . self::$tableName . " WHERE cookieuser=?";
+        $query = "SELECT ". self::$fieldExpireDate .
+                 " FROM " . self::$tableName . 
+                 " WHERE ". self::$fieldCookieUser ."=?";
 
         if ($stmt = $this->dbConnection->prepare($query)) {
             $stmt->bind_param("s", $cookieUsername);
@@ -139,9 +192,9 @@ class UserCookieDAL {
 
     private function createCookieTableIfNeeded() {
         $createTable = "CREATE TABLE IF NOT EXISTS " . self::$tableName . " (
-            cookieuser VARCHAR(30) NOT NULL UNIQUE,
-            cookiepassword VARCHAR(250) NOT NULL,
-            expiredate int(250)
+            ". self::$fieldCookieUser ." VARCHAR(30) NOT NULL UNIQUE,
+            ". self::$fieldCookiePassword ." VARCHAR(250) NOT NULL,
+            ". self::$fieldExpireDate ." int(250)
             )";
 
             if($this->dbConnection->query($createTable)) {

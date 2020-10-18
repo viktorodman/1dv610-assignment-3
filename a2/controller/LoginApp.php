@@ -10,21 +10,18 @@ require_once('View/Register.php');
 require_once('View/DateTime.php');
 
 class LoginApp {
-
-    private $settings;
-    private $userSession;
     private $authenticator;
     private $isLoggedIn;
-
+    private $sessionHandler;
     private $loginView;
     private $registerView;
 
-    public function __construct(\Settings $settings, \Authenticator $authenticator) {
-        $this->settings = $settings;
+    public function __construct(\Authenticator $authenticator, \SessionStorageHandler $sessionHandler) {
         $this->authenticator = $authenticator;
+        $this->sessionHandler = $sessionHandler;
 
-        $this->loginView = new \View\Login($authenticator);
-        $this->registerView = new \View\Register($authenticator);
+        $this->loginView = new \View\Login($sessionHandler, $authenticator->isLoggedIn());
+        $this->registerView = new \View\Register($sessionHandler);
     }
 
     public function run() {
@@ -51,7 +48,7 @@ class LoginApp {
 
     private function generateOutput() {
         $dateTimeView = new \View\DateTime();
-        $layoutView = new \View\Layout();
+        $layoutView = new \View\Layout($this->isLoggedIn);
 
         $this->loginView->doHeaders();
         $this->registerView->doHeaders();

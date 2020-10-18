@@ -55,8 +55,7 @@ class Todo {
                 $this->todoDAL->addTodoToDatabase($todo);
                 $todoFormView->redirectAndShowCreateMessage();
             } catch (\Throwable $e) {
-                var_dump($e->getMessage());
-                exit;
+                $todoFormView->reloadPageAndShowErrorMessage($e->getMessage());
             }          
         }
     }

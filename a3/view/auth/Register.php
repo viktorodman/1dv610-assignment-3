@@ -78,9 +78,9 @@ class Register {
         </div>
         <div class="column">
             <div id="loginArea">
-            <h2>Register new user</h2>
+            <span class="loginTitle">Register</span>
             <form class="authForm" action="?' . self::$registerURLID .'" method="post" enctype="multipart/form-data">
-                    <p id="'. self::$messageID .'">'. $errorMessage .'</p>
+                    <p class="errorMessage" id="'. self::$messageID .'">'. $errorMessage .'</p>
                     <input type="text" size="20" name="'. self::$name .'" id="'. self::$name .'" value="'. $remeberedUsername .'" placeholder="Username"/>
                     <input type="password" size="20" name="'. self::$password .'" id="'. self::$password .'" value="" placeholder="Password"/>
                     <input type="password" size="20" name="'. self::$passwordRepeat .'" id="'. self::$passwordRepeat .'" value="" placeholder="Repeat Password"/>

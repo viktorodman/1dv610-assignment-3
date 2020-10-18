@@ -120,9 +120,9 @@ class Login {
         </div>
         <div class="column">
             <div id="loginArea">
-                <p class="loginTitle" id="">Login</p>
+                <span class="loginTitle" id="">Login</span>
                 <form class="authForm" id="loginForm" method="post" > 
-                    <p id="'. self::$messageId .'">'. $message .'</p>
+                    <p class="errorMessage" id="'. self::$messageId .'">'. $message .'</p>
                     <hr>
                     <label for="' . self::$name . '"></label>
                     <input type="text" id="' . self::$name . '" name="' . self::$name . '" value="'.$remeberedUsername.'" placeholder="Username"/>
@@ -133,7 +133,7 @@ class Login {
                         <input type="checkbox" id="' . self::$keep . '" name="' . self::$keep . '" />
                     </div>
                     <div>
-                        <input id="loginSubmit" type="submit" name="' . self::$login . '" value="login" />
+                        <input id="loginSubmit" type="submit" name="' . self::$login . '" value="Login" />
                     </div>
                 </form>
             </div>

@@ -3,6 +3,9 @@
 namespace View;
 
 class Register {
+    private static $rememberedUserSessionIndex = "rememberedUserSessionIndex";
+    private static $messageSessionIndex = "messageSessionIndex";
+    
     private static $registerURLID = 'register';
     private static $messageID = 'RegisterView::Message';
 	private static $password = 'RegisterView::Password';
@@ -15,17 +18,18 @@ class Register {
 
     private $shouldBeReloaded = false;
     private $reloadURL;
-    private $authenticator;
+    private $sessionHandler;
  
-    public function __construct(\Authenticator $authenticator) {
-        $this->authenticator = $authenticator;
+    public function __construct(\SessionStorageHandler $sessionHandler) {
+        $this->sessionHandler = $sessionHandler;
     }
 
     public function response() {
-        $remeberedUsername = $this->authenticator->getRemeberedUsername();
-        $errorMessage = $this->authenticator->getSessionMessage();
+        $remeberedUsername = $this->sessionHandler->getRememberedSessionVariable(self::$rememberedUserSessionIndex);
+		$message = $this->sessionHandler->getRememberedSessionVariable(self::$messageSessionIndex);
+
         
-        return $this->generateRegisterFormHTML($errorMessage, $remeberedUsername);
+        return $this->generateRegisterFormHTML($message, $remeberedUsername);
     }
 
     public function doHeaders() {
@@ -35,8 +39,13 @@ class Register {
     }
     
     public function reloadPageAndRemeberRegisteredAccount() {
-        $this->authenticator->remeberSuccessfullRegistration(
-            $this->getRequestUsername(),
+        $this->sessionHandler->setSessionVariable(
+            self::$rememberedUserSessionIndex,
+            $this->getRequestUsername()
+        );
+
+        $this->sessionHandler->setSessionVariable(
+            self::$messageSessionIndex,
             self::$registeredUserMessage
         );
 
@@ -46,8 +55,13 @@ class Register {
 
 
     public function reloadPageAndShowErrorMessage(string $errorMessage) {
-        $this->authenticator->remeberFailedRegistration(
-            $this->getRequestUsername(),
+        $this->sessionHandler->setSessionVariable(
+            self::$rememberedUserSessionIndex,
+            $this->getRequestUsername()
+        );
+
+        $this->sessionHandler->setSessionVariable(
+            self::$messageSessionIndex,
             $errorMessage
         );
 		

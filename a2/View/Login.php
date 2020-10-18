@@ -4,6 +4,9 @@ namespace View;
 
 
 class Login {
+	private static $rememberedUserSessionIndex = "rememberedUserSessionIndex";
+    private static $messageSessionIndex = "messageSessionIndex";
+
 	private static $login = 'LoginView::Login';
 	private static $logout = 'LoginView::Logout';
 	private static $name = 'LoginView::UserName';
@@ -17,20 +20,23 @@ class Login {
 	private static $loginCookieMessage = "Welcome back with cookie";
 	private static $loginRemeberMessage = "Welcome and you will be remembered";
 
-	private $authenticator;
+
+	private $sessionHandler;
+	private $isLoggedIn;
 	private $shouldBeReloaded = false;
 	
 
-	public function __construct(\Authenticator $authenticator) {
-		$this->authenticator = $authenticator;
+	public function __construct(\SessionStorageHandler $sessionHandler, bool $isLoggedIn) {
+		$this->sessionHandler = $sessionHandler;
+		$this->isLoggedIn = $isLoggedIn;
 	}
 
-	
 	public function getLoginFormHTML() {
-		$remeberedUsername = $this->authenticator->getRemeberedUsername();
-		$message = $this->authenticator->getSessionMessage();
+		$remeberedUsername = $this->sessionHandler->getRememberedSessionVariable(self::$rememberedUserSessionIndex);
+		$message = $this->sessionHandler->getRememberedSessionVariable(self::$messageSessionIndex);
+
 		
-		if ($this->authenticator->isLoggedIn()) {
+		if ($this->isLoggedIn) {
 			$response = $this->generateLogoutButtonHTML($message);
 		} else {
 			$response = $this->generateLoginFormHTML($message, $remeberedUsername);
@@ -57,7 +63,8 @@ class Login {
 			$username = $this->getRequestUsername();
 		}
 
-		$this->authenticator->remeberSuccessfulLogin($username, $message);
+		$this->sessionHandler->setSessionVariable(self::$rememberedUserSessionIndex, $username);
+		$this->sessionHandler->setSessionVariable(self::$messageSessionIndex, $message);
 
 		$this->shouldBeReloaded = true;
 	}
@@ -68,7 +75,7 @@ class Login {
 			$this->unsetCookies();
 		}
 
-		$this->authenticator->attemptLogout(self::$goodByeMessage);
+		$this->sessionHandler->setSessionVariable(self::$messageSessionIndex, self::$goodByeMessage);
 		
 		$this->shouldBeReloaded = true;
 	}
@@ -83,7 +90,8 @@ class Login {
 			$this->shouldBeReloaded = true;
 		}
 
-		$this->authenticator->remeberFailedLogin($username, $errorMessage);
+		$this->sessionHandler->setSessionVariable(self::$rememberedUserSessionIndex, $username);
+		$this->sessionHandler->setSessionVariable(self::$messageSessionIndex, $errorMessage);
 	}
 
 	public function unsetCookies() {
@@ -91,9 +99,9 @@ class Login {
         setcookie(self::$cookiePassword, '', time()-70000000);
 	}
 	
-	public function setUserCookies(\Model\UserCookie $userCookie) {
-        setcookie(self::$cookieName, $userCookie->getCookieUsername(), $userCookie->getCookieDuration());
-        setcookie(self::$cookiePassword, $userCookie->getCookiePassword(), $userCookie->getCookieDuration());
+	public function setUserCookies(string $cookieUsername, string $cookiePassword, int $cookieDuration) {
+        setcookie(self::$cookieName, $cookieUsername, $cookieDuration);
+        setcookie(self::$cookiePassword, $cookiePassword, $cookieDuration);
 	}
 
 	public function userWantsToLogin () : bool {

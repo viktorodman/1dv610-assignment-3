@@ -16,6 +16,7 @@ class Login {
     public function doLogout() {
         if ($this->authenticator->isLoggedIn()) {
             if ($this->loginView->userWantsToLogout()) {
+                $this->authenticator->attemptLogout();
                 $this->loginView->reloadPageAndLogout();
             }
         }
@@ -25,17 +26,21 @@ class Login {
         try {
             if ($this->authenticator->isLoggedIn() === false) {
                 if ($this->loginView->userWantsToLoginWithCookies()) {
+                    $this->loginWithCookies();
 
-                    $updatedCookieInformation = $this->authenticator->attemptLoginWithCookies(
-                        $this->loginView->getCookieUsername(),
-                        $this->loginView->getCookiePassword()
-                    );
-            
-                    $this->loginView->setUserCookies($updatedCookieInformation);
                     $this->loginView->reloadPageAndLogin();
+                } else if($this->loginView->userWantsToLogin()){
 
-                } elseif($this->loginView->userWantsToLogin()){
-                    $this->attemptLogin();
+                    if ($this->loginView->userWantsToBeRemembered()) {
+                        $this->loginAndBeRemebered();
+                    } else {
+                        $this->authenticator->attemptLogin(
+                            $this->loginView->getRequestUsername(),
+                            $this->loginView->getRequestPassword(),
+                            false
+                        );
+                    }
+
                     $this->loginView->reloadPageAndLogin();
                 }
             }
@@ -44,18 +49,33 @@ class Login {
         }
     }
 
-    private function attemptLogin () {
-        if ($this->loginView->userWantsToBeRemembered()) {
-            $userCookie = $this->authenticator->attemptLoginAndRememberUser(
-                $this->loginView->getRequestUsername(),
-                $this->loginView->getRequestPassword()
-            );
-            $this->loginView->setUserCookies($userCookie);
-        } else {
-            $this->authenticator->attemptLogin(
-                $this->loginView->getRequestUsername(),
-                $this->loginView->getRequestPassword()
-            );
-        }
+    private function loginAndBeRemebered() {
+        $username = $this->loginView->getRequestUsername();
+
+        $this->authenticator->attemptLogin(
+            $username,
+            $this->loginView->getRequestPassword(),
+            true
+        );
+
+        $this->loginView->setUserCookies(
+            $username,
+            $this->authenticator->getCookiePassword($username),
+            $this->authenticator->getCookieDuration($username)
+        );
+    }
+    private function loginWithCookies() {
+        $cookieUser = $this->loginView->getCookieUsername();
+
+        $this->authenticator->attemptLoginWithCookies(
+            $cookieUser,
+            $this->loginView->getCookiePassword()
+        );
+        
+        $this->loginView->setUserCookies(
+            $cookieUser,
+            $this->authenticator->getCookiePassword($cookieUser),
+            $this->authenticator->getCookieDuration($cookieUser)
+        );
     }
 }
