@@ -101,6 +101,10 @@ class Authenticator {
         return $this->userSession->getRememberedUsername();;
     }
 
+    public function getUser() : string {
+        return $this->userSession->getSessionUser();
+    }
+
     private function setRemeberedUsername($username) {
         $this->userSession->setRemeberedUsername($username);
         $this->userSession->setUsernameToBeRemembered();

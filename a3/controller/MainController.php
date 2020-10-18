@@ -15,8 +15,6 @@ class MainController {
     public function __construct(\Settings $settings, \Authenticator $authenticator) {
         $this->settings = $settings;
         $this->authenticator = $authenticator;
-
-        $this->authViews = new \View\Auth\AuthViews($authenticator);
     }   
 
     public function run() {
@@ -35,7 +33,7 @@ class MainController {
             $todoMainController = new \Controller\Todo\TodoMain(
                 $this->layoutView,
                 $this->settings->getDBConnection(),
-                $this->authenticator->getSessionUser()
+                $this->authenticator->getUser()
             );
 
             $todoMainController->run();

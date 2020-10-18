@@ -16,16 +16,16 @@ class Layout {
         $this->isLoggedIn = $isLoggedIn;
     }
 
-    public function renderLoggedOutLayout(\View\Auth\AuthViews $authViews) {
+    public function renderLoggedOutLayout(\View\Auth\Login $loginView, \View\Auth\Register $registerView) {
        if ($this->shouldShowRegisterForm()) {
-            $this->render(false, $authViews->getRegisterView()->getRegisterFormHTML());
+            $this->render($registerView->getRegisterFormHTML());
         } else {
-            $this->render(false, $authViews->getLoginView()->getLoginFormHTML());
+            $this->render($loginView->getLoginFormHTML());
         }
     }
 
     public function renderLoggedInLayout(\View\Todo\TodoLayout $todoLayout) {
-        $this->render(true, $todoLayout->getTodoLayoutHTML());
+        $this->render($todoLayout->getTodoLayoutHTML());
     }
 
     private function render(string $pageHTML) {
@@ -34,10 +34,11 @@ class Layout {
                     <head>
                         <link rel="stylesheet" href="style.css">
                         <meta charset="utf-8">
-                        <link href="https://fonts.googleapis.com/css2?family=Oswald&display=swap" rel="stylesheet">
+                        <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@300&display=swap" rel="stylesheet">
                         <title>Todo App</title>
                     </head>
                     <body>
+                    <header></header
                        '. $this->getBodyHTML($pageHTML) .'
                     </body>
                 </html>

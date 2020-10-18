@@ -8,10 +8,10 @@ class Todo {
     private $author;
     private $todoInfo;
     
-    public function __construct(string $author, \Model\TodoInfo $todoInfo) {
+    public function __construct(string $author, \Model\TodoInfo $todoInfo, string $id) {
         $this->author = $author;
         $this->todoInfo = $todoInfo;
-        $this->id = $this->generateID();
+        $this->id = $id;
     }
 
     public function getAuthor() : string {
@@ -36,11 +36,7 @@ class Todo {
         return $this->todoInfo->getCreateDate();
     }
 
-    public function getID() : int {
+    public function getID() : string {
         return $this->id;
     }
-
-    private function generateID() : string {
-        return uniqid();
-    } 
 }

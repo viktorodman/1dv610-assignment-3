@@ -2,9 +2,7 @@
 
 namespace View\Todo;
 
-require_once('Todo.php');
-require_once('TodoList.php');
-require_once('TodoForm.php');
+
 require_once('model/Todo.php');
 require_once('model/TodoList.php');
 require_once('model/TodoInfo.php');
@@ -16,27 +14,31 @@ class TodoLayout {
     private static $updateURL = 'update';
     private static $deleteURL = 'delete';
     
-    private $todoListView;
-    private $todoFormView;
+    private $todoViews;
 
-    public function __construct(TodoForm $todoFormView, \Model\TodoList $userTodos) {
-        $this->todoListView = new TodoList($userTodos);
-        $this->todoFormView = $todoFormView;
+    public function __construct(\View\Todo\TodoViews $todoViews) {
+        $this->todoViews = $todoViews;
     }
 
     public function getTodoLayoutHTML() : string {
         $pageContentHTML = '';
 
         if ($this->userWantsToShowTodos()) {
-            $pageContentHTML = $this->todoListView->generateTodoListHTML();
+
+            $pageContentHTML = $this->todoViews->getTodoListHTML();
+
         } else if($this->userWantToShowTodoForm()) {
-            $pageContentHTML = $this->todoFormView->generateTodoFormHTML();
-        } 
+
+            $pageContentHTML = $this->todoViews->getTodoFormHTML();
+
+        } else if ($this->todoViews->getTodoListView()->userWantsToShowTodo()) {
+            
+            $pageContentHTML = $this->todoViews->getTodoView()->generateTodoHTML();
+        }
 
         return $this->generateLayoutHTML($pageContentHTML);
     }
-
-    
+  
     public function userWantToShowTodoForm() : bool {
         return isset($_GET[self::$createURLID]);
     }

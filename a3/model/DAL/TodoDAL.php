@@ -9,7 +9,7 @@ require_once('model/TodoInfo.php');
 class TodoDAL {
     private static $tableName = "Todo";
     private static $authorField = "author";
-    private static $idField = "id";
+    private static $idField = "todoid";
     private static $titleField = "title";
     private static $descriptionField = "description";
     private static $deadlineField = "deadline";
@@ -24,7 +24,8 @@ class TodoDAL {
         $this->createUserTableIfNeeded();
     }
 
-    public function getUserTodos(string $todoAuthor) : \Model\TodoList {
+
+    public function getUsersTodosFromDatabase(string $todoAuthor) : \Model\TodoList {
         $query = "SELECT * FROM " . self::$tableName . " WHERE author=?";
         
         $results = [];
@@ -32,22 +33,23 @@ class TodoDAL {
         if($stmt = $this->dbConnection->prepare($query)) {
             $stmt->bind_param("s", $todoAuthor);
             $stmt->execute();
-
-            
-
-
             $test = $stmt->get_result();
 
-            
-           
-
             while ($row = $test->fetch_array(MYSQLI_ASSOC)) {
+                $todoInfo = new \Model\TodoInfo(
+                    $row[self::$titleField],
+                    $row[self::$descriptionField],
+                    $row[self::$statusField],
+                    $row[self::$deadlineField],
+                    $row[self::$createDateField]
+                );
+
+                $results[] = new \Model\Todo(
+                    $row[self::$authorField],
+                    $todoInfo,
+                    $row[self::$idField]
+                );
             }
-
-
-
-            
-
             $stmt->close();
         }
        
@@ -56,19 +58,39 @@ class TodoDAL {
 
     public function addTodoToDatabase(\Model\Todo $todo) {
         
-        $query = "INSERT INTO " . self::$tableName . " (author, id, title, description, deadline, createdate) VALUES (?, ?, ?, ?, ?, ?, ?)";
+        $query = "INSERT INTO " . self::$tableName . " (author, todoid, title, description, deadline, createdate, status) VALUES (?, ?, ?, ?, ?, ?, ?)";
+
+        $author = $todo->getAuthor();
+        $todoID = $todo->getID();
+        $title = $todo->getTitle();
+        $description = $todo->getDescription();
+        $deadline = $todo->getDeadline();
+        $createDate = $todo->getCreateDate();
+        $status = $todo->getStatus();
 
         if ($stmt = $this->dbConnection->prepare($query)) {
             $stmt->bind_param(
                 "sssssss",
-                $todo->getAuthor(),
-                $todo->getID(),
-                $todo->getTitle(),
-                $todo->getDescription(),
-                $todo->getDeadline(),
-                $todo->getCreateDate(),
-                $todo->getStatus()
+                $author,
+                $todoID,
+                $title,
+                $description,
+                $deadline,
+                $createDate,
+                $status
         );
+            $stmt->execute();
+            $stmt->close();
+        } else {
+            // Todo Add error message
+        }
+    }
+
+    public function deleteTodo(string $username, string $todoID) {
+        $query = 'DELETE FROM '. self::$tableName .' WHERE author=? AND todoid=?';
+
+        if ($stmt = $this->dbConnection->prepare($query)) {
+            $stmt->bind_param('ss', $username, $todoID);
             $stmt->execute();
             $stmt->close();
         } else {
@@ -88,9 +110,9 @@ class TodoDAL {
             )';
 
         if($this->dbConnection->query($createTable)) {
-           // Add message
+           // TODO Add message
         } else {
-            // Add error message
+            // TODO Add error message
         }
     }
 } 

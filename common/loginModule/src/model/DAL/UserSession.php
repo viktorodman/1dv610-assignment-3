@@ -20,6 +20,10 @@ class UserSession {
         return $this->getRememberedSessionVariable($this->messageWasSetAndShouldNotBeRemovedDuringThisRequest, self::$messageSessionIndex);
     }
 
+    public function getSessionUser() : string {
+        return $_SESSION[self::$userSessionIndex];
+    }
+
 
     public function userSessionIsActive() : bool {
         return isset($_SESSION[self::$userSessionIndex]) && $_SESSION[self::$browserSessionIndex] == $_SERVER['HTTP_USER_AGENT'];

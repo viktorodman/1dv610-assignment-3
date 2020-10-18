@@ -16,4 +16,14 @@ class TodoList {
     public function isEmpty() : bool {
         return count($this->todoList) < 1;
     }
+
+    public function getTodoByID(string $todoID) : \Model\Todo {
+        foreach ($this->todoList as $todo) {
+            if ($todo->getID() === $todoID) {
+                
+                return $todo;
+            }            
+        }
+        throw new \Exception("Todo not found");
+    }
 }
