@@ -14,7 +14,6 @@ class TodoDAL {
     private static $descriptionField = "description";
     private static $deadlineField = "deadline";
     private static $createDateField = "createdate";
-    private static $statusField = "status";
 
     private $dbConnection;
    
@@ -39,7 +38,6 @@ class TodoDAL {
                 $todoInfo = new \Model\TodoInfo(
                     $row[self::$titleField],
                     $row[self::$descriptionField],
-                    $row[self::$statusField],
                     $row[self::$deadlineField],
                     $row[self::$createDateField]
                 );
@@ -58,7 +56,7 @@ class TodoDAL {
 
     public function addTodoToDatabase(\Model\Todo $todo) {
         
-        $query = "INSERT INTO " . self::$tableName . " (author, todoid, title, description, deadline, createdate, status) VALUES (?, ?, ?, ?, ?, ?, ?)";
+        $query = "INSERT INTO " . self::$tableName . " (author, todoid, title, description, deadline, createdate) VALUES (?, ?, ?, ?, ?, ?)";
 
         $author = $todo->getAuthor();
         $todoID = $todo->getID();
@@ -66,23 +64,21 @@ class TodoDAL {
         $description = $todo->getDescription();
         $deadline = $todo->getDeadline();
         $createDate = $todo->getCreateDate();
-        $status = $todo->getStatus();
 
         if ($stmt = $this->dbConnection->prepare($query)) {
             $stmt->bind_param(
-                "sssssss",
+                "ssssss",
                 $author,
                 $todoID,
                 $title,
                 $description,
                 $deadline,
-                $createDate,
-                $status
+                $createDate
         );
             $stmt->execute();
             $stmt->close();
         } else {
-            // Todo Add error message
+            // Todo Add error message 
         }
     }
 
@@ -105,8 +101,7 @@ class TodoDAL {
             '. self::$titleField .' VARCHAR(255) NOT NULL,
             '. self::$descriptionField .' TEXT NOT NULL,
             '. self::$deadlineField .' VARCHAR(60) NOT NULL,
-            '. self::$createDateField .' VARCHAR(60) NOT NULL,
-            '. self::$statusField .' VARCHAR(60) NOT NULL
+            '. self::$createDateField .' VARCHAR(60) NOT NULL
             )';
 
         if($this->dbConnection->query($createTable)) {

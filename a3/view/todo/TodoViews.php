@@ -18,6 +18,11 @@ class TodoViews {
         $this->todoList = new \View\Todo\TodoList($userTodos);
     }
 
+    public function doHeaders() {
+        $this->todoView->doHeaders();
+        $this->todoForm->doHeaders();
+    }
+
     public function getTodoView() : \View\Todo\Todo {
         return $this->todoView;
     }

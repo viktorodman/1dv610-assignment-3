@@ -2,31 +2,28 @@
 
 namespace Model;
 
+require_once('model/TodoTitle.php');
+require_once('model/TodoDescription.php');
+
 class TodoInfo {
     private $title;
     private $description;
-    private $status;
     private $deadLine;
     private $createDate;
 
-    public function __construct(string $title, string $description, string $status, string $deadLine, string $createDate) {
-        $this->title = $title;
-        $this->description = $description;
-        $this->status = $status;
+    public function __construct(string $title, string $description, string $deadLine, string $createDate) {
+        $this->title = new TodoTitle($title);
+        $this->description = new TodoDescription($description);
         $this->deadLine = $deadLine;
         $this->createDate = $createDate;
     }
 
     public function getTitle() : string {
-        return $this->title;
+        return $this->title->getTitle();
     }
 
     public function getDescription() : string {
-        return $this->description;
-    }
-
-    public function getStatus() : string {
-        return $this->status;
+        return $this->description->getDescription();
     }
 
     public function getDeadline() : string {
@@ -36,11 +33,4 @@ class TodoInfo {
     public function getCreateDate() : string {
         return $this->createDate;
     }
-
-    // MOVE THIS to create view
-    /* private function generateCreateDate() : string {
-        date_default_timezone_set('Europe/Stockholm');
-
-        return date('Y-m-d');
-    } */
 }

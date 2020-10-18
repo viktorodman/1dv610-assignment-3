@@ -6,6 +6,7 @@ class Todo {
     private static $delete = 'TodoView::Delete';
     private static $selectedTodoID = 'TodoView::SelectedTodoID';
     private $selectedTodo;
+    private $shouldBeReloaded = false;
     
     public function generateTodoHTML() : string {
         return '
@@ -26,12 +27,19 @@ class Todo {
                     <span>Todo Date: '. $this->selectedTodo->getDeadline() .'</span>
                 </div>
                 <hr>
-                <div class="todoListItemStatus">
-                    <span>'. $this->selectedTodo->getStatus() .'</span>
-                </div>
                 '. $this->getDeleteButtonHTML() .'
             </div>
         ';
+    }
+
+    public function doHeaders() {
+		if ($this->shouldBeReloaded) {
+			header('Location: /a3?todos');
+		}
+    }
+    
+    public function redirectAndDeleteTodo() {
+        $this->shouldBeReloaded = true;
     }
 
     public function setSelectedTodo(\Model\Todo $toBeDisplayed) {

@@ -24,9 +24,6 @@ class Todo {
     public function getDescription() : string {
         return $this->todoInfo->getDescription();
     }
-    public function getStatus() : string {
-        return $this->todoInfo->getStatus();
-    }
 
     public function getDeadline() : string {
         return $this->todoInfo->getDeadline();

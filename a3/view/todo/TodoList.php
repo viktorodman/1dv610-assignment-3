@@ -51,7 +51,6 @@ class TodoList {
                     <br>
                     <span class="todoListItemCreateDate">Create date: '. $todo->getCreateDate() .'</span>
                     <br>
-                    <span class="todoListItemStatus">'. $todo->getStatus() .'</span>
                 </div>
             ';
         }

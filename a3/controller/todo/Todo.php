@@ -48,10 +48,16 @@ class Todo {
     }
 
     private function addTodo() {
-        if ($this->todoViews->getTodoFormView()->userWantsToAddTodo()) {            
-            $todo = $this->attemptToCreateTodo();
-            
-            $this->todoDAL->addTodoToDatabase($todo);
+        $todoFormView = $this->todoViews->getTodoFormView();
+        if ($todoFormView->userWantsToAddTodo()) {  
+            try {
+                $todo = $this->attemptToCreateTodo();
+                $this->todoDAL->addTodoToDatabase($todo);
+                $todoFormView->redirectAndShowCreateMessage();
+            } catch (\Throwable $e) {
+                var_dump($e->getMessage());
+                exit;
+            }          
         }
     }
 
@@ -65,16 +71,17 @@ class Todo {
             $todoID = $todoView->getRequestSelectedTodoID();
 
             $this->todoDAL->deleteTodo($this->username, $todoID);
+            $todoView->redirectAndDeleteTodo();
         }
     }
 
 
     private function attemptToCreateTodo() : \Model\Todo {
+        $todoFormView = $this->todoViews->getTodoFormView();
         $todoInformation = new \Model\TodoInfo(
-            $this->todoFormView->getRequestTitle(),
-            $this->todoFormView->getRequestDescription(),
-            "Not Started",
-            $this->todoFormView->getRequestDate(),
+            $todoFormView->getRequestTitle(),
+            $todoFormView->getRequestDescription(),
+            $todoFormView->getRequestDate(),
             date('Y-m-d')
         );
 

@@ -43,6 +43,7 @@ class TodoMain {
     }
 
     private function generateOutput() {
+        $this->todoViews->doHeaders();
         $this->layoutView->renderLoggedInLayout($this->todoLayoutView);
     }  
 }
