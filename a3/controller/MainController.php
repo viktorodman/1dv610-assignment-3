@@ -3,8 +3,10 @@
 namespace Controller;
 
 require_once('view/Layout.php');
+require_once('view/Error.php');
 require_once('controller/auth/AuthMain.php');
 require_once('controller/todo/TodoMain.php');
+
 
 class MainController {
     private $authenticator;
@@ -23,9 +25,13 @@ class MainController {
     }   
 
     public function run() {
-        $this->loadState();
-        $this->handleInput();
-        $this->generateOutput();
+        try {
+            $this->loadState();
+            $this->handleInput();
+            $this->generateOutput();
+        } catch (\Throwable $e) {
+            $this->handleError($e);
+        }
     }
 
     private function loadState() {
@@ -35,14 +41,22 @@ class MainController {
 
     private function handleInput() {
         if ($this->isLoggedIn) {
+            
+
             $todoMainController = new \Controller\Todo\TodoMain(
                 $this->layoutView,
                 $this->settings->getDBConnection(),
                 $this->sessionHandler,
                 $this->authenticator->getUser()
             );
-
             $todoMainController->run();
+
+            if ($this->layoutView->userWantsToLogout()) {
+                $this->authenticator->attemptLogout();
+                $this->layoutView->reloadPageAndLogout();
+            }
+
+            
         } else {
             $authMainController = new \Controller\Auth\AuthMain(
                 $this->authenticator, 
@@ -55,6 +69,13 @@ class MainController {
     }
 
     private function generateOutput() {
-        
+        $this->layoutView->doHeaders();
+    }
+
+    private function handleError($e) {
+        $errorView = new \View\Error($e, $this->settings);
+
+        $errorView->writeToLog();
+        $errorView->echoHTML();
     }
 }

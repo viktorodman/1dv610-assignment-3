@@ -5,10 +5,14 @@ namespace View;
 class Layout {
 
     private static $registerURLID = 'register';
+    private static $logout = 'logout';
     private static $registerText = 'Register a new user';
     private static $goBackText = 'Back to login';
+    private static $logoutMessage = 'Bye bye!';
     private $linkText;
     private $navigationURL;
+
+    private $shouldBeReloaded = false;
 
     private $isLoggedIn; 
 
@@ -26,6 +30,20 @@ class Layout {
 
     public function renderLoggedInLayout(\View\Todo\TodoLayout $todoLayout) {
         $this->render($todoLayout->getTodoLayoutHTML());
+    }
+
+    public function userWantsToLogout() : bool {
+        return isset($_POST[self::$logout]);
+    }
+
+    public function doHeaders() {
+		if ($this->shouldBeReloaded) {
+			header('Location: /a3');
+		}
+    }
+    
+    public function reloadPageAndLogout() {
+		$this->shouldBeReloaded = true;
     }
 
     private function render(string $pageHTML) {
@@ -80,16 +98,18 @@ class Layout {
     private function getNavHTML() : string {
         if ($this->isLoggedIn) {
             // THIS WILL BE REPLACED WITH A LOGOUT FORM BUTTON
-            return '<a href="/a3">Logout</a>';
+            return '<form class="logoutForm" method="post" >
+                        <input class="logoutButton" type="submit" name="' . self::$logout . '" value="logout"/>
+                    </form>';
         } else if ($this->shouldShowRegisterForm()){
             return '<a href="/a3">Back To Login</a>';
         } else {
             return '<a href="?'. self::$registerURLID .'">Register New Account</a>';
         }
     }
+    
 
     private function shouldShowRegisterForm() : bool {
         return isset($_GET[self::$registerURLID]);
-    }
-
+    }  
 }

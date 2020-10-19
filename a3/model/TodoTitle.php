@@ -2,6 +2,8 @@
 
 namespace Model;
 
+require_once('TodoException.php');
+
 class TodoTitle {
     private static $titleToShortMessage = "Title to short! Must be at least 1 character";
     private static $titleToLongMessage = "Title to long! Must be less than 30 characters";
@@ -11,11 +13,11 @@ class TodoTitle {
 
     public function __construct(string $title) {
         if (strlen($title) < self::$titleMinLength) {
-            throw new \Exception(self::$titleToShortMessage);
+            throw new \Model\TodoException(self::$titleToShortMessage);
         }
         
         if (strlen($title) > self::$titleMaxLength) {
-            throw new \Exception(self::$titleToLongMessage);
+            throw new \Model\TodoException(self::$titleToLongMessage);
         }
         $this->title = $title;
     }

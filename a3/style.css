@@ -103,6 +103,24 @@ footer {
     clear: both;
 }
 
+.logoutButton:hover {
+    color: var(--third-color);
+    text-decoration: underline;
+    cursor: pointer;
+}
+
+.logoutButton {
+    background-color: transparent;
+    color: var(--primary-color);
+    border: unset;
+
+
+    font-weight: 200;
+    font-size: 20px;
+    letter-spacing: 2px;
+    text-align: center;
+    text-transform: uppercase;
+}
 
 /*
 ************************************************

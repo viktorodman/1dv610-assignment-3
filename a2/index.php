@@ -19,6 +19,6 @@ $settings = new \Settings();
 $authenticator = new \Authenticator($settings->getDBConnection());
 $sessionHandler = new \SessionStorageHandler();
 
-$loginApp = new \Controller\LoginApp($authenticator, $sessionHandler);
+$loginApp = new \Controller\LoginApp($authenticator, $sessionHandler, $settings);
 
 $loginApp->run();

@@ -1,0 +1,15 @@
+
+ ************ October 18, 2020, 10:24 pm 
+ Error when loading data: Exception: test in /Users/viktorodman/Documents/Skola/1dv610/Assignments/1dv610-assignment-3/a2/controller/Login.php:27
+Stack trace:
+#0 /Users/viktorodman/Documents/Skola/1dv610/Assignments/1dv610-assignment-3/a2/controller/LoginApp.php(67): Controller\Login->doLogin()
+#1 /Users/viktorodman/Documents/Skola/1dv610/Assignments/1dv610-assignment-3/a2/controller/LoginApp.php(50): Controller\LoginApp->handleInput()
+#2 /Users/viktorodman/Documents/Skola/1dv610/Assignments/1dv610-assignment-3/a2/index.php(24): Controller\LoginApp->run()
+#3 {main}
+ ************ October 18, 2020, 10:31 pm 
+ Error when loading data: Exception: test in /Users/viktorodman/Documents/Skola/1dv610/Assignments/1dv610-assignment-3/a2/controller/Login.php:27
+Stack trace:
+#0 /Users/viktorodman/Documents/Skola/1dv610/Assignments/1dv610-assignment-3/a2/controller/LoginApp.php(67): Controller\Login->doLogin()
+#1 /Users/viktorodman/Documents/Skola/1dv610/Assignments/1dv610-assignment-3/a2/controller/LoginApp.php(50): Controller\LoginApp->handleInput()
+#2 /Users/viktorodman/Documents/Skola/1dv610/Assignments/1dv610-assignment-3/a2/index.php(24): Controller\LoginApp->run()
+#3 {main}

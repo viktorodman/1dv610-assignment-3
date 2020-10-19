@@ -26,14 +26,9 @@ class Todo {
     }
 
     public function doTodos() {
-        try {
-           $this->showTodo();
-           $this->addTodo();
-           $this->updateTodo();
-           $this->deleteTodo();
-        } catch (\Throwable $e) {
-            //throw $th;
-        }
+        $this->showTodo();
+        $this->addTodo();
+        $this->deleteTodo();
     }
 
     private function showTodo() {
@@ -52,14 +47,12 @@ class Todo {
                 $todo = $this->attemptToCreateTodo();
                 $this->todoDAL->addTodoToDatabase($todo);
                 $todoFormView->redirectAndShowCreateMessage();
+            } catch (\Model\TodoException $todoError) {
+                $todoFormView->reloadPageAndShowErrorMessage($todoError->getMessage());
             } catch (\Throwable $e) {
-                $todoFormView->reloadPageAndShowErrorMessage($e->getMessage());
-            }          
+                throw $e;
+            }     
         }
-    }
-
-    private function updateTodo() {
-
     }
 
     private function deleteTodo() {

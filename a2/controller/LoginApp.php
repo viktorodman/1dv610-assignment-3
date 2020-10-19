@@ -8,6 +8,7 @@ require_once('View/Layout.php');
 require_once('View/Login.php');
 require_once('View/Register.php');
 require_once('View/DateTime.php');
+require_once('View/Error.php');
 
 class LoginApp {
     private static $rememberedUserSessionIndex = "rememberedUserSessionIndex";
@@ -18,10 +19,15 @@ class LoginApp {
     private $sessionHandler;
     private $loginView;
     private $registerView;
+    private $settings;
 
-    public function __construct(\Authenticator $authenticator, \SessionStorageHandler $sessionHandler) {
+    public function __construct(\Authenticator $authenticator, 
+                                \SessionStorageHandler $sessionHandler,
+                                \Settings $settings) {
+        
         $this->authenticator = $authenticator;
         $this->sessionHandler = $sessionHandler;
+        $this->settings = $settings;
 
         $this->loginView = new \View\Login(
             $sessionHandler, 
@@ -38,11 +44,15 @@ class LoginApp {
     }
 
     public function run() {
-        $this->loadState();
+        try {
+            $this->loadState();
 
-        $this->handleInput();
-
-        $this->generateOutput();
+            $this->handleInput();
+    
+            $this->generateOutput();
+        } catch (\Throwable $e) {
+            $this->handleError($e);
+        }
     }
 
     private function loadState() {
@@ -72,5 +82,12 @@ class LoginApp {
             $dateTimeView,
             $this->registerView
         );
+    }
+
+    private function handleError($e) {
+        $errorView = new \View\Error($e, $this->settings);
+
+        $errorView->writeToLog();
+        $errorView->echoHTML();
     }
 }

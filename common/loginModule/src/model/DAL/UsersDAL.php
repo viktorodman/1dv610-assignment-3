@@ -54,7 +54,7 @@ class UsersDAL {
             $stmt->execute();
             $stmt->close();
         } else {
-            // Todo Add error message
+            throw new \Exception("Something went wrong when trying add user to database");
         }
     }
 
@@ -79,6 +79,8 @@ class UsersDAL {
                 $stmt->close();
                 return true;
             }
+        } else {
+            throw new \Exception("Something went wrong when checking if a user password is correct");
         }
         $stmt->close();
         return false;
@@ -95,6 +97,8 @@ class UsersDAL {
     
             $userExists = $stmt->num_rows;
             $stmt->close();
+        } else {
+            throw new \Exception("Something went wrong when checking if user exists in database");
         }
        
         return $userExists == 1;
@@ -107,9 +111,9 @@ class UsersDAL {
             )";
 
         if($this->dbConnection->query($createTable)) {
-           // Add message
+
         } else {
-            // Add error message
+            throw new \Exception("Something went wrong when trying to create user table");
         }
     }
 }

@@ -47,7 +47,7 @@ class Login {
         } catch (\Model\LoginException $loginError) {
             $this->loginView->reloadPageAndShowErrorMessage($loginError->getMessage());
         } catch (\Throwable $error) {
-            // Write to log
+            throw $error;
         }
     }
 

@@ -25,7 +25,7 @@ class Register {
             } catch (\Model\RegistrationException $regError) {
                 $this->registerView->reloadPageAndShowErrorMessage($regError->getMessage());
             } catch (\Throwable $error) {
-                // Write to errorLog
+                throw $error;
             }
         }
     }

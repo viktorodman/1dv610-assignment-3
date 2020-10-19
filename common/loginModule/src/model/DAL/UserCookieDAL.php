@@ -58,7 +58,7 @@ class UserCookieDAL {
             $stmt->execute();
             $stmt->close();
         } else {
-            // Todo Add error message
+            throw new \Exception("Something went wrong when Updating cookie Information");
         } 
     }
 
@@ -79,6 +79,8 @@ class UserCookieDAL {
             $stmt->close();
 
             return $savedPassword;
+        } else {
+            throw new \Exception("Something went wrong when trying to get cookie password from database");
         }
     }
 
@@ -99,6 +101,8 @@ class UserCookieDAL {
             $stmt->close();
 
             return $cookieDuration;
+        } else {
+            throw new \Exception("Something went wrong when trying to get cookie duration from database");
         }
     }
 
@@ -120,7 +124,7 @@ class UserCookieDAL {
             $stmt->execute();
             $stmt->close();
         } else {
-            // Todo Add error message
+            throw new \Exception("Something went wrong when trying to save cookie information");
         }
     }
 
@@ -137,6 +141,8 @@ class UserCookieDAL {
     
             $userExists = $stmt->num_rows;
             $stmt->close();
+        } else {
+            throw new \Exception("Something went wrong when checking if a usercookie exists");
         }
        
         return $userExists == 1;
@@ -161,6 +167,8 @@ class UserCookieDAL {
                 $stmt->close();
                 return true;
             }
+        } else {
+            throw new \Exception("Something went wrong when checking if cookie password is valid");
         }
         $stmt->close();
         return false;
@@ -186,6 +194,8 @@ class UserCookieDAL {
             if ($cookieExpiredate > time()) {
                 return false;
             }
+        } else {
+            throw new \Exception("Something went wrong when checking if cookie is expired");
         }
 
         return true;
@@ -203,7 +213,7 @@ class UserCookieDAL {
             if($this->dbConnection->query($createTable)) {
                 // Add message
              } else {
-                 // Add error message
+            throw new \Exception("Something went wrong when trying to create cookieTable");
              }
     }
 }

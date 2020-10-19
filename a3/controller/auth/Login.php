@@ -38,7 +38,7 @@ class Login {
         } catch(\Model\LoginException $credentialsException) {
             $this->loginView->reloadPageAndShowErrorMessage($credentialsException->getMessage());
         } catch (\Throwable $error) {
-           /*  $this->loginView->reloadPageAndShowErrorMessage($error->getMessage()); */
+           throw $error;
         }
     }
 

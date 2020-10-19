@@ -49,6 +49,8 @@ class TodoDAL {
                 );
             }
             $stmt->close();
+        } else {
+            throw new \Exception("Something went wrong when fetching todos from database");
         }
        
         return new \Model\TodoList($results);
@@ -78,7 +80,7 @@ class TodoDAL {
             $stmt->execute();
             $stmt->close();
         } else {
-            // Todo Add error message 
+            throw new \Exception("Something went wrong when trying to add todo to database");
         }
     }
 
@@ -90,7 +92,7 @@ class TodoDAL {
             $stmt->execute();
             $stmt->close();
         } else {
-            // Todo Add error message
+            throw new \Exception("Something went wrong when trying to delete todo from database");
         }
     }
 
@@ -107,7 +109,7 @@ class TodoDAL {
         if($this->dbConnection->query($createTable)) {
            // TODO Add message
         } else {
-            // TODO Add error message
+            throw new \Exception("Something went wrong when trying to create todo table to database");
         }
     }
 } 
